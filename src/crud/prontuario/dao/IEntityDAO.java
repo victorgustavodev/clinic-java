@@ -1,4 +1,4 @@
-package crud.clinic.dao;
+package crud.prontuario.dao;
 
 import java.util.List;
 
@@ -13,4 +13,6 @@ public interface IEntityDAO <T> {
 	public List<T> findAll();
 	
 	public void update(T t);
+
+	public T findByCPF(String s);
 }

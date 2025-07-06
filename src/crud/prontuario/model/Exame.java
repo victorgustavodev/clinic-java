@@ -1,4 +1,4 @@
-package crud.clinic.model;
+package crud.prontuario.model;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -8,16 +8,32 @@ public class Exame {
 	private Long id;
 	private String descricao;
 	private LocalDateTime data;
+	private Paciente paciente;
 	
 	public Exame() {
 		super();
 	}
 
-	public Exame(Long id, String descricao, LocalDateTime data) {
-		super();
-		this.id = id;
+	public Exame(String descricao, LocalDateTime data, Paciente paciente) {	
 		this.descricao = descricao;
 		this.data = data;
+		this.paciente = paciente;
+	}
+	
+	public Exame(String descricao, LocalDateTime data) {
+		
+		this.descricao = descricao;
+		this.data = data;
+	}
+	
+	
+
+	public Paciente getpaciente() {
+		return paciente;
+	}
+
+	public void setpaciente(Paciente paciente) {
+		this.paciente = paciente;
 	}
 
 	public Long getId() {
@@ -46,7 +62,7 @@ public class Exame {
 
 	@Override
 	public String toString() {
-		return "Exame [id=" + id + ", descricao=" + descricao + ", data=" + data + "]";
+		return "Exame [id=" + id + ", descricao=" + descricao + ", data=" + data + ", paciente=" + paciente.getNome() + "]";
 	}
 
 	@Override

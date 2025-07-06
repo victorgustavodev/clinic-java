@@ -1,4 +1,4 @@
-package crud.clinic.model;
+package crud.prontuario.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +15,15 @@ public class Paciente {
 	public Paciente() {
 	}
 
+	public Paciente(String cpf) {
+		this.cpf = cpf;
+	}
+	
+	public Paciente( String nome, String cpf) {
+		this.nome = nome;
+		this.cpf = cpf;
+	}
+	
 	public Paciente(Long id, String nome, String cpf) {
 		this.id = id;
 		this.nome = nome;
