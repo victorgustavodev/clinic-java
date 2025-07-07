@@ -62,6 +62,10 @@ public class Paciente {
 		this.exames = exames;
 	}
 
+	public void addExame(Exame e) {
+		exames.add(e);
+	}
+	
 	@Override
 	public String toString() {
 		return "Paciente [id=" + id + ", nome=" + nome + ", cpf=" + cpf + ", exames=" + exames + "]";

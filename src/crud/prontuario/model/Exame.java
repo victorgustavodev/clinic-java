@@ -62,7 +62,7 @@ public class Exame {
 
 	@Override
 	public String toString() {
-		return "Exame [id=" + id + ", descricao=" + descricao + ", data=" + data + ", paciente=" + paciente.getNome() + "]";
+		return "Exame [id = " + id + ", descricao = " + descricao + ", data = " + data + ", Id do paciente = " + paciente.getId() + "]";
 	}
 
 	@Override

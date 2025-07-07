@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mysql.cj.protocol.Resultset;
 
 import crud.prontuario.database.IConnection;
 import crud.prontuario.model.Paciente;
@@ -18,23 +17,6 @@ public class PacienteDAO implements IEntityDAO<Paciente> {
 	public PacienteDAO(IConnection connection) {
 		this.conn = connection;
 	}
-
-//	@Override
-//	public void create(Paciente t) {
-//		// TODO Auto-generated method stub
-//		try {
-//			PreparedStatement pstm = conn.getConnection()
-//					.prepareStatement("INSERT INTO PACIENTES VALUES (?, ?, ?);");
-//			pstm.setLong(1, t.getId());
-//			pstm.setString(2, t.getNome());
-//			pstm.setString(3, t.getCpf());
-//			pstm.execute();
-//			pstm.close();
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
 
 	@Override
 	public void create(Paciente t) {
@@ -94,6 +76,18 @@ public class PacienteDAO implements IEntityDAO<Paciente> {
 	@Override
 	public void delete(Paciente t) {
 		// TODO Auto-generated method stub
+		
+		try {
+			PreparedStatement pstm = conn.getConnection().prepareStatement("DELETE FROM EXAMES WHERE paciente_id = ?;");
+			pstm.setLong(1, t.getId());
+			pstm.execute();
+			pstm.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 		try {
 			PreparedStatement pstm = conn.getConnection().prepareStatement("DELETE FROM PACIENTES WHERE ID = ?;");
 			pstm.setLong(1, t.getId());

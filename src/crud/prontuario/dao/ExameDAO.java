@@ -55,7 +55,7 @@ public class ExameDAO implements IEntityDAO<Exame>{
 				exame.setId(rs.getLong("id"));
 				exame.setDescricao(rs.getString("descricao"));
 				
-				exame.setData(rs.getTimestamp("data").toLocalDateTime());
+				exame.setData(rs.getTimestamp("data_exame").toLocalDateTime());
 			}
 			pstm.close();
 		} catch (SQLException e) {
@@ -80,35 +80,8 @@ public class ExameDAO implements IEntityDAO<Exame>{
 		}
 	}
 
-	@Override
-//	public List<Exame> findAll() {
-//		List<Exame> exames = new ArrayList<>();
-//		
-//		String sql = "SELECT * FROM exames;";
-//		try {
-//			PreparedStatement pstm = conn.getConnection()
-//					.prepareStatement(sql);
-//			ResultSet rs = pstm.executeQuery();
-//			
-//			while(rs.next()) {
-//				
-//				Long id = rs.getLong("id");
-//				String descricao = rs.getString("descricao");
-//				java.time.LocalDateTime data = rs.getTimestamp("data_exame").toLocalDateTime();
-//				
-//				Paciente paciente = new Paciente();
-//				Long idPaciente = rs.getLong("paciente_id");
-//				exame.setPaciente(paciente);
-//				
-////				exames.add(new Exame(id, descricao, data));
-//			}
-//			pstm.close();
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
-//		return exames;
-//	}
-	
+
+	@Override	
 	public List<Exame> findAll() {
         List<Exame> exames = new ArrayList<>();
 
