@@ -29,6 +29,17 @@ public class Paciente {
 		this.nome = nome;
 		this.cpf = cpf;
 	}
+	
+	public Paciente(Long id, String nome, String cpf, List<Exame> exames) {
+		this.id = id;
+		this.nome = nome;
+		this.cpf = cpf;
+		this.exames = exames;
+	}
+	
+	public Paciente(Exame exames) {
+		this.exames = new ArrayList<>();
+	}
 
 	public Long getId() {
 		return id;
@@ -68,6 +79,7 @@ public class Paciente {
 	
 	@Override
 	public String toString() {
+		
 		return "Paciente [id=" + id + ", nome=" + nome + ", cpf=" + cpf + ", exames=" + exames + "]";
 	}
 

@@ -15,4 +15,5 @@ public interface IEntityDAO <T> {
 	public void update(T t);
 
 	public T findByCPF(String s);
+
 }

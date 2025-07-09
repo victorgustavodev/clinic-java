@@ -2,6 +2,7 @@ package crud.prontuario.app;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import crud.prontuario.dao.ExameDAO;
@@ -29,17 +30,34 @@ public class Application {
 
 			System.out.println("\n============================\n");
 			System.out.println(
-					"Olá, seja bem vindo ao nosso sistema de gerenciamento clinico! \nSelecione qual das opções abaixo deseja: \n\n1 - Gerenciar pacientes \n2 - Gerenciar Exames");
-			System.out.print("\n---> ");
-			option = sc.nextInt();
+					"Olá, seja bem vindo ao nosso sistema de gerenciamento clinico! \nSelecione qual das opções abaixo deseja:"
+					+ " \n\n1 - Gerenciar pacientes \n2 - Gerenciar Exames \n");
+			try {
+				System.out.print("-> ");
+				option = sc.nextInt();
+                sc.nextLine();
+            } catch (InputMismatchException e) {
+                System.out.println("\nEntrada inválida! Insira uma opção válida!");
+                sc.nextLine();
+                continue; 
+            }
+			
 
 			switch (option) {
 			case 1:
 				System.out.println("\n============================\n");
-				System.out.println(
-						"Escolha uma das opções abaixo: \n1 - Adicionar Paciente \n2 - Listar Pacientes \n3 - Editar Paciente \n4 - Excluir Paciente \n0 - Sair");
-				System.out.print("\n--->: ");
-				option = sc.nextInt();
+				System.out.println("Escolha uma das opções abaixo: \n");
+				System.out.println("1 - Adicionar Paciente \n2 - Listar Pacientes \n3 - Editar Paciente \n4 - Excluir Paciente \n0 - Sair");
+				
+				try {
+					System.out.print("\n-> ");
+					option = sc.nextInt();
+	                sc.nextLine();
+	            } catch (InputMismatchException e) {
+	                System.out.println("\nEntrada inválida! Insira uma opção válida!");
+	                sc.nextLine();
+	                continue; 
+	            }
 
 				switch (option) {
 				// OK
@@ -56,9 +74,14 @@ public class Application {
 
 					Paciente p = new Paciente(nome, cpf);
 
-					pacienteDao.create(p);
+					try {
+						pacienteDao.create(p);
 
-					System.out.println("Paciente adicionado com sucesso!");
+						System.out.println("\nPaciente adicionado com sucesso!");
+					} catch (Exception e) {
+						System.err.println(e);
+					}
+					
 					break;
 
 				// OK
@@ -73,10 +96,14 @@ public class Application {
 					break;
 
 				case 3:
+					int editOpcao;
 					sc.nextLine();
 
-					System.out.print("Digite o CPF do usuário que deseja atualizar: ");
+					System.out.print("\nDigite o CPF do usuário que deseja atualizar: \n");
 
+					
+					System.out.print("\n-> ");
+					
 					String cpfEditarUsuario = sc.nextLine();
 
 					Paciente paciente = null;
@@ -84,32 +111,40 @@ public class Application {
 					paciente = pacienteDao.findByCPF(cpfEditarUsuario);
 
 					if (paciente != null) {
-						System.out.println("Você selecionou o paciente: " + paciente + " para editar.");
+						System.out.println("\nVocê selecionou o paciente: " + paciente + " para editar.\n");
 
 						System.out.println("O que deseja editar?");
 						System.out.println("1. Nome");
 						System.out.println("2. CPF");
 						System.out.println("3. Nome e CPF");
-						System.out.print("Escolha uma opção: ");
-						int editOpcao = sc.nextInt();
-						sc.nextLine();
+						
+						
+						try {
+							System.out.print("\n-> ");
+							editOpcao = sc.nextInt();
+							sc.nextLine();
+			            } catch (InputMismatchException e) {
+			                System.out.println("\nEntrada inválida! Insira uma opção válida!");
+			                sc.nextLine();
+			                continue; 
+			            }
 
 						boolean atualizadoComSucesso = false;
 
 						while (!atualizadoComSucesso && (editOpcao >= 1 && editOpcao <= 3)) {
 							switch (editOpcao) {
 							case 1 -> {
-								System.out.print("Novo nome: ");
+								System.out.print("\nNovo nome: ");
 								paciente.setNome(sc.nextLine());
 							}
 							case 2 -> {
-								System.out.print("Novo CPF: ");
+								System.out.print("\nNovo CPF: ");
 								paciente.setCpf(sc.nextLine());
 							}
 							case 3 -> {
-								System.out.print("Novo nome: ");
+								System.out.print("\nNovo nome: ");
 								paciente.setNome(sc.nextLine());
-								System.out.print("Novo CPF: ");
+								System.out.print("\nNovo CPF: ");
 								paciente.setCpf(sc.nextLine());
 							}
 							default -> {
@@ -130,18 +165,21 @@ public class Application {
 					sc.nextLine();
 					System.out.println("\n============================\n");
 					System.out.print("Inserir qual o CPF do paciente que deseja deletar: ");
+					System.out.print("-> ");
 					String cpfDeletar = sc.nextLine();
-
-					Paciente p1 = pacienteDao.findByCPF(cpfDeletar);
-
-					System.out.println("Tem certeza que deseja excluir o paciente\n" + p1 + "?");
+							
+					System.out.println("Tem certeza que deseja excluir o paciente\n" + pacienteDao.findByCPF(cpfDeletar).getNome() + "?");
 					System.out.println("S ou N?");
-					System.err.print("\n--->");
-					if (sc.nextLine() == "S") {
-						pacienteDao.delete(p1);
+					System.out.print("-> ");
+					
+					String opt = sc.nextLine();
+					
+					
+					
+					if (opt.equalsIgnoreCase("S")) {
+						pacienteDao.delete(pacienteDao.findByCPF(cpfDeletar));
+						System.out.println("Paciente excluido com sucesso!");
 					}
-
-					System.out.println("Paciente excluido com sucesso!");
 
 					break;
 
@@ -158,86 +196,125 @@ public class Application {
 				break;
 
 			// EXAMES
+				// EXAMES
 			case 2:
+				int exameOption;
+				
+			    System.out.println("\n============================\n");
+			    System.out.println("Escolha uma das opções abaixo:");
+			    System.out.println("1 - Cadastrar Exames");
+			    System.out.println("2 - Listar Exames");
+			    System.out.println("3 - Editar Exames");
+			    System.out.println("4 - Excluir Exames");
+			    System.out.println("0 - Voltar");
+			    
+			    
+			    try {
+			    	System.out.print("-> ");
+			    	exameOption = sc.nextInt();
+				    sc.nextLine();
+	            } catch (InputMismatchException e) {
+	                System.out.println("\nEntrada inválida! Insira uma opção válida!");
+	                sc.nextLine();
+	                continue; 
+	            }
+					    
 
-				System.out.println("\n============================\n");
-				System.out.println(
-						"Escolha uma das opções abaixo: \n1 - Cadastrar Exames \n2 - Listar Exames \n3 - Editar Exames \n4 - Excluir exames \n0 - Sair ");
-				System.out.print("\n---> ");
-				option = sc.nextInt();
+			    switch (exameOption) {
 
-				switch (option) {
+			        case 1 -> {
+			            System.out.println("\n============================\n");
 
-				case 1:
-					sc.nextLine();
-					System.out.println("\n============================\n");
+			            System.out.print("Insira o CPF do paciente: ");
+			            String cpfExamePaciente = sc.nextLine();
+			            Paciente paciente = pacienteDao.findByCPF(cpfExamePaciente);
 
-					System.out.println("Insira o cpf do paciente: ");
-					String cpfExamePaciente = sc.nextLine();
-					Paciente paciente = pacienteDao.findByCPF(cpfExamePaciente);
+			            if (paciente == null) {
+			                System.out.println("Paciente não encontrado com o CPF fornecido.");
+			                break;
+			            }
 
-					System.out.print("Descrição do exame: ");
-					String descricao = sc.nextLine();
+			            System.out.print("Descrição do exame: ");
+			            String descricao = sc.nextLine();
+			            LocalDateTime data = LocalDateTime.now();
 
-					LocalDateTime data = LocalDateTime.now();
+			            Exame exame = new Exame(descricao, data, paciente);
+			            exameDao.create(exame);
 
-					Exame e = new Exame(descricao, data);
+			            System.out.println("\nExame adicionado com sucesso!");
+			            break;
+			        }
 
-					paciente.addExame(e);
+			        case 2 -> {
+			            ArrayList<Exame> exames = new ArrayList<>(exameDao.findAll());
 
-					System.out.println("\nExame adicionado com sucesso!");
+			            System.out.println("\n============================\n");
 
-					break;
+			            if (exames.isEmpty()) {
+			                System.out.println("Não há nenhum exame disponível.");
+			            } else {
+			                System.out.println("Lista de exames:");
+			                for (Exame ex : exames) {
+			                    System.out.println(ex);
+			                }
+			            }
+			            break;
+			        }
 
-				case 2:
-					sc.nextLine();
+			        case 3 -> {
+			            System.out.print("Insira o ID do exame que deseja alterar: ");
+			            Long idExame = sc.nextLong();
+			            sc.nextLine();
 
-					ArrayList<Exame> exames = new ArrayList<>(exameDao.findAll());
+			            Exame exameUpdate = exameDao.findById(idExame);
 
-					System.out.println("\n============================\n");
+			            if (exameUpdate == null) {
+			                System.out.println("Exame com ID " + idExame + " não encontrado.");
+			                break;
+			            }
 
-					if (exames.isEmpty()) {
-						System.out.println("Não há nenhum exame disponível.");
-					} else {
-						System.out.println("Lista de exames:");
-						for (Exame exame : exames) {
-							System.out.println(exame);
-						}
-					}
-					break;
+			            System.out.println("Descrição atual: " + exameUpdate.getDescricao());
+			            System.out.print("Nova descrição: ");
+			            String novaDescricao = sc.nextLine();
 
-				case 3:
-					sc.nextLine();
+			            exameUpdate.setDescricao(novaDescricao);
+			            exameUpdate.setData(LocalDateTime.now());
 
-					System.out.println("Inserir cpf do paciente que deseja editar: ");
-					break;
+			            exameDao.update(exameUpdate);
+			            System.out.println("Exame atualizado com sucesso.");
+			            break;
+			        }
 
-				case 4:
-					sc.nextLine();
+			        case 4 -> {
+			            System.out.print("Insira o ID do exame que deseja deletar: ");
+			            Long id = sc.nextLong();
+			            sc.nextLine();
 
-					System.out.println("Insira o ID do exame que deseja deletar: ");
-					System.out.print("---> ");
+			            Exame exame = exameDao.findById(id);
 
-					Long id = sc.nextLong();
-					sc.nextLine();
+			            if (exame != null) {
+			                exameDao.delete(exame);
+			                System.out.println("Exame excluído com sucesso!");
+			            } else {
+			                System.out.println("Exame não encontrado com o ID fornecido.");
+			            }
+			            break;
+			        }
 
-					Exame exame = exameDao.findById(id);
+			        case 0 -> {
+			            System.out.println("Voltando ao menu principal...");
+			            break;
+			        }
 
-					if (exame != null) {
-						exameDao.delete(exame);
-						System.out.println("Exame excluído com sucesso!");
-					} else {
-						System.out.println("Exame não encontrado com o ID fornecido.");
-					}
+			        default -> {
+			            System.out.println("Opção inválida.");
+			            break;
+			        }
+			    }
 
-					break;
+			    break;
 
-				default:
-					sair = false;
-					break;
-				}
 
-				break;
 
 			}
 		}

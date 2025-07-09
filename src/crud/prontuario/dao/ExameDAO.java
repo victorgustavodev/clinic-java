@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import crud.prontuario.database.IConnection;
+import crud.prontuario.exception.DAOException;
 import crud.prontuario.model.Exame;
 import crud.prontuario.model.Paciente;
 
@@ -20,10 +21,10 @@ public class ExameDAO implements IEntityDAO<Exame>{
 	
 	@Override
 	public void create(Exame exame) {
-		String sql = "INSERT INTO exames (descricao, data_exame, paciente_id) VALUES (?, ?, ?);";
+		
 		try {
 			PreparedStatement pstm = conn.getConnection()
-					.prepareStatement(sql);
+					.prepareStatement("INSERT INTO exames (descricao, data_exame, paciente_id) VALUES (?, ?, ?);");
 			
 			pstm.setString(1, exame.getDescricao());
 			pstm.setTimestamp(2, Timestamp.valueOf(exame.getData()));
@@ -71,7 +72,6 @@ public class ExameDAO implements IEntityDAO<Exame>{
 		try {
 			PreparedStatement pstm = conn.getConnection()
 					.prepareStatement(sql);
-			
 			pstm.setLong(1, exame.getId());
 			pstm.execute();
 			pstm.close();
@@ -79,7 +79,6 @@ public class ExameDAO implements IEntityDAO<Exame>{
 			e.printStackTrace();
 		}
 	}
-
 
 	@Override	
 	public List<Exame> findAll() {
@@ -102,28 +101,24 @@ public class ExameDAO implements IEntityDAO<Exame>{
 
                 exames.add(exame);
             }
-
             pstm.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return exames;
     }
-	
+
 	@Override
 	public void update(Exame exame) {
 		
-		String sql = "UPDATE exames SET descricao = ?, data = ? WHERE id = ?;";
+		String sql = "UPDATE exames SET descricao = ?, data_exame = ? WHERE id = ?;";
 		try {
 			PreparedStatement pstm = conn.getConnection()
 					.prepareStatement(sql);
 			
-			
 			pstm.setString(1, exame.getDescricao());
 			pstm.setTimestamp(2, Timestamp.valueOf(exame.getData()));
 			pstm.setLong(3, exame.getId());
-			
 			pstm.execute();
 			pstm.close();
 		} catch (SQLException e) {
@@ -136,4 +131,5 @@ public class ExameDAO implements IEntityDAO<Exame>{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 }
