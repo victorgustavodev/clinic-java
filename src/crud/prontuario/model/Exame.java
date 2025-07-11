@@ -10,9 +10,7 @@ public class Exame {
 	private LocalDateTime data;
 	private Paciente paciente;
 	
-	public Exame() {
-		super();
-	}
+	public Exame() {}
 
 	public Exame(String descricao, LocalDateTime data, Paciente paciente) {	
 		this.descricao = descricao;
@@ -21,12 +19,9 @@ public class Exame {
 	}
 	
 	public Exame(String descricao, LocalDateTime data) {
-		
 		this.descricao = descricao;
 		this.data = data;
-	}
-	
-	
+	}	
 
 	public Paciente getpaciente() {
 		return paciente;

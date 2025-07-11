@@ -33,7 +33,7 @@ public class ExameDAO implements IEntityDAO<Exame>{
 			pstm.execute();
 			pstm.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new DAOException("Não foi possivel criar o exame." + e);
 		}
 	}
 	
