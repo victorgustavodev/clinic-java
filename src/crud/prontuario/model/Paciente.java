@@ -9,7 +9,7 @@ public class Paciente {
 	private Long id;
 	private String nome;
 	private String cpf;
-	
+
 	private List<Exame> exames = new ArrayList<Exame>();
 
 	public Paciente() {
@@ -18,25 +18,25 @@ public class Paciente {
 	public Paciente(String cpf) {
 		this.cpf = cpf;
 	}
-	
-	public Paciente( String nome, String cpf) {
+
+	public Paciente(String nome, String cpf) {
 		this.nome = nome;
 		this.cpf = cpf;
 	}
-	
+
 	public Paciente(Long id, String nome, String cpf) {
 		this.id = id;
 		this.nome = nome;
 		this.cpf = cpf;
 	}
-	
+
 	public Paciente(Long id, String nome, String cpf, List<Exame> exames) {
 		this.id = id;
 		this.nome = nome;
 		this.cpf = cpf;
 		this.exames = exames;
 	}
-	
+
 	public Paciente(Exame exames) {
 		this.exames = new ArrayList<>();
 	}
@@ -79,8 +79,21 @@ public class Paciente {
 	
 	@Override
 	public String toString() {
-		
-		return "Paciente [id=" + id + ", nome=" + nome + ", cpf=" + cpf + ", exames=" + exames + "]";
+	    StringBuilder sb = new StringBuilder();
+	    sb.append("Paciente [id=").append(id)
+	      .append(", nome=").append(nome)
+	      .append(", cpf=").append(cpf)
+	      .append("]\n");
+
+	    if (exames != null && !exames.isEmpty()) {
+	        for (Exame exame : exames) {
+	            sb.append("  - ").append(exame).append("\n");
+	        } 
+	    } else {
+	    	 sb.append(" - ").append("Nenhuma exame cadastrado");
+        }
+
+	    return sb.toString();
 	}
 
 	@Override
@@ -99,13 +112,5 @@ public class Paciente {
 		Paciente other = (Paciente) obj;
 		return Objects.equals(cpf, other.cpf);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 }

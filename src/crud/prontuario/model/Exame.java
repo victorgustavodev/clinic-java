@@ -57,7 +57,10 @@ public class Exame {
 
 	@Override
 	public String toString() {
-		return "Exame [id = " + id + ", descricao = " + descricao + ", data = " + data + ", Id do paciente = " + paciente.getId() + "]";
+	    return String.format(
+	        "Exame [ID: %d, Descrição: %s, Data: %s, Paciente ID: %d]",
+	        id, descricao, data.toString(), paciente != null ? paciente.getId() : null
+	    );
 	}
 
 	@Override

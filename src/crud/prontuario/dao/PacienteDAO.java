@@ -29,7 +29,7 @@ public class PacienteDAO implements IEntityDAO<Paciente> {
 			pstm.executeUpdate();
 			pstm.close();
 		} catch (SQLException e) {
-			throw new DAOException("Não foi possivel criar o paciente! Erro ->" + e);
+			throw new DAOException("Não foi possivel criar o paciente. \nErro: " + e);
 		}
 	}
 
@@ -46,27 +46,9 @@ public class PacienteDAO implements IEntityDAO<Paciente> {
 			}
 			pstm.close();
 		} catch (SQLException e) {
-			throw new DAOException("Não foi possivel buscar o paciente pelo ID! Erro ->", e);
+			throw new DAOException("Não foi possivel buscar o paciente. \nErro: " + e);
 		}
 		return p;
-	}
-
-	public Paciente findByCPF(String cpf) {
-		Paciente paciente = null;
-		try {
-			PreparedStatement pstm = conn.getConnection().prepareStatement("SELECT * FROM PACIENTES WHERE cpf = ?;");
-			pstm.setString(1, cpf);
-			ResultSet rs = pstm.executeQuery();
-			if (rs.next()) {
-				paciente = new Paciente(rs.getLong("id"), rs.getString("nome"), rs.getString("cpf"));
-				carregarExames(paciente);
-			}
-			rs.close();
-			pstm.close();
-		} catch (SQLException e) {
-			throw new DAOException("Não foi possivel buscar o paciente pelo CPF! Erro ->", e);
-		}
-		return paciente;
 	}
 
 	@Override
@@ -84,55 +66,77 @@ public class PacienteDAO implements IEntityDAO<Paciente> {
 			pstmPaciente.execute();
 			pstmPaciente.close();
 		} catch (SQLException e) {
-			throw new DAOException("Não foi possivel deletar o paciente! Erro ->", e);
+			throw new DAOException("Não foi possivel deletar o paciente. \nErro: " + e);
 		}
 	}
+	
+	public Paciente findByCPF(String cpf) {
+	    Paciente paciente = null;
+	    try {
+	        PreparedStatement pstm = conn.getConnection().prepareStatement("SELECT * FROM PACIENTES WHERE cpf = ?;");
+	        pstm.setString(1, cpf);
+	        ResultSet rs = pstm.executeQuery();
+	        if (rs.next()) {
+	            paciente = new Paciente(rs.getLong("id"), rs.getString("nome"), rs.getString("cpf"));
+
+	            // Carregar e setar exames
+	            List<Exame> exames = carregarExames(paciente);
+	            paciente.setExames(exames);
+	        }
+	        rs.close();
+	        pstm.close();
+	    } catch (SQLException e) {
+	    	throw new DAOException("Não foi possivel buscar o paciente. \nErro: " + e);
+	    }
+	    return paciente;
+	}
+
 
 	@Override
 	public List<Paciente> findAll() {
-		List<Paciente> pacientes = new ArrayList<>();
-		try {
-			PreparedStatement pstm = conn.getConnection().prepareStatement("SELECT * FROM PACIENTES;");
-			ResultSet rs = pstm.executeQuery();
-			while (rs.next()) {
-				Paciente paciente = new Paciente(rs.getLong("id"), rs.getString("nome"), rs.getString("cpf"));
-				carregarExames(paciente);
-				pacientes.add(paciente);
-			}
-			pstm.close();
-		} catch (SQLException e) {
-			throw new DAOException("Não foi possivel buscar os pacientes! Erro ->", e);
-		}
-		return pacientes;
+	    List<Paciente> pacientes = new ArrayList<>();
+	    try {
+	        PreparedStatement pstm = conn.getConnection().prepareStatement("SELECT * FROM PACIENTES;");
+	        ResultSet rs = pstm.executeQuery();
+
+	        while (rs.next()) {
+	            Paciente paciente = new Paciente(rs.getLong("id"), rs.getString("nome"), rs.getString("cpf"));
+
+	            pacientes.add(paciente);
+	        }
+	        pstm.close();
+	    } catch (SQLException e) {
+	        throw new DAOException("Não foi possível buscar os pacientes! \nErro: ", e);
+	    }
+	    return pacientes;
+	}
+	
+	private List<Exame> carregarExames(Paciente paciente) {
+	    List<Exame> exames = new ArrayList<>();
+	    try {
+	        PreparedStatement pstm = conn.getConnection()
+	                .prepareStatement("SELECT * FROM EXAMES WHERE paciente_id = ?;");
+	        pstm.setLong(1, paciente.getId());
+	        ResultSet rs = pstm.executeQuery();
+
+	        while (rs.next()) {
+	            Exame exame = new Exame();
+	            exame.setId(rs.getLong("id"));
+	            exame.setDescricao(rs.getString("descricao"));
+	            exame.setData(rs.getTimestamp("data_exame").toLocalDateTime());
+	            exame.setpaciente(paciente);
+	            exames.add(exame);
+	        }
+
+	        rs.close();
+	        pstm.close();
+	    } catch (SQLException e) {
+	        throw new DAOException("Erro ao carregar exames do paciente ID: " + paciente.getId(), e);
+	    }
+
+	    return exames;
 	}
 
-	private void carregarExames(Paciente paciente) {
-		List<Exame> exames = new ArrayList<>();
-		try {
-			PreparedStatement pstm = conn.getConnection()
-					.prepareStatement("SELECT * FROM EXAMES WHERE PACIENTE_ID = ?;");
-			pstm.setLong(1, paciente.getId());
-			ResultSet rs = pstm.executeQuery();
-
-			if (rs.equals(null)) {
-				exames = null;
-			} else {
-				while (rs.next()) {
-					Exame exame = new Exame();
-					exame.setId(rs.getLong("id"));
-					exame.setDescricao(rs.getString("descricao"));
-					exame.setData(rs.getTimestamp("data_exame").toLocalDateTime());
-					exame.setpaciente(paciente);
-					exames.add(exame);
-				}
-			}
-			pstm.close();
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		paciente.setExames(exames);
-	}
 
 	@Override
 	public void update(Paciente t) {
@@ -145,7 +149,7 @@ public class PacienteDAO implements IEntityDAO<Paciente> {
 			pstm.execute();
 			pstm.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new DAOException("Não foi possivel atualizar o paciente. \nErro: " + e);
 		}
 	}
 

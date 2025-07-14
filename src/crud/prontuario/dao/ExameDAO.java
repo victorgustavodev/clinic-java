@@ -33,7 +33,7 @@ public class ExameDAO implements IEntityDAO<Exame>{
 			pstm.execute();
 			pstm.close();
 		} catch (SQLException e) {
-			throw new DAOException("Não foi possivel criar o exame." + e);
+			throw new DAOException("Não foi possivel criar o exame. \nErro: " + e);
 		}
 	}
 	
@@ -60,7 +60,7 @@ public class ExameDAO implements IEntityDAO<Exame>{
 			}
 			pstm.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new DAOException("Não foi possivel localizar o exame. \nErro: " + e);
 		}
 		return exame;
 	}
@@ -76,7 +76,7 @@ public class ExameDAO implements IEntityDAO<Exame>{
 			pstm.execute();
 			pstm.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new DAOException("Não foi possivel deletar o exame. \nErro: " + e);
 		}
 	}
 
@@ -103,7 +103,7 @@ public class ExameDAO implements IEntityDAO<Exame>{
             }
             pstm.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+        	throw new DAOException("Não foi possivel listar os exames. \nErro: " + e);
         }
         return exames;
     }
@@ -122,7 +122,7 @@ public class ExameDAO implements IEntityDAO<Exame>{
 			pstm.execute();
 			pstm.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new DAOException("Não foi possivel atualizar o exame. \nErro: " + e);
 		}
 	}
 
