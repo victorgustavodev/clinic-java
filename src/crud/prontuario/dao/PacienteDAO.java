@@ -101,7 +101,7 @@ public class PacienteDAO implements IEntityDAO<Paciente> {
 
 	        while (rs.next()) {
 	            Paciente paciente = new Paciente(rs.getLong("id"), rs.getString("nome"), rs.getString("cpf"));
-
+	            
 	            pacientes.add(paciente);
 	        }
 	        pstm.close();

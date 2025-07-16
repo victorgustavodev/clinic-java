@@ -76,7 +76,7 @@ public class Paciente {
 	public void addExame(Exame e) {
 		exames.add(e);
 	}
-	
+		
 	@Override
 	public String toString() {
 	    StringBuilder sb = new StringBuilder();
@@ -89,9 +89,7 @@ public class Paciente {
 	        for (Exame exame : exames) {
 	            sb.append("  - ").append(exame).append("\n");
 	        } 
-	    } else {
-	    	 sb.append(" - ").append("Nenhuma exame cadastrado");
-        }
+	    } 
 
 	    return sb.toString();
 	}

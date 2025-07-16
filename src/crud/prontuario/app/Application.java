@@ -47,7 +47,7 @@ public class Application {
 				System.out.println("\n============================\n");
 				System.out.println("Escolha uma das opções abaixo: \n");
 				System.out.println(
-						"1 - Adicionar Paciente \n2 - Visualizar exames do paciente \n3 - Listar Pacientes \n4 - Editar Paciente \n5 - Excluir Paciente \n0 - Voltar");
+						"1 - Adicionar Paciente \n2 - Buscar paciente \n3 - Listar Pacientes \n4 - Editar Paciente \n5 - Excluir Paciente \n0 - Voltar");
 
 				try {
 					System.out.print("\n-> ");
@@ -87,15 +87,16 @@ public class Application {
 				case 2:
 					sc.nextLine();
 
-					System.out.println("\nInsira o cpf do paciente que deseja visualizar:");
+					System.out.println("\nInsira o cpf do paciente que deseja buscar:");
 
-					System.out.print("\n-> ");
+					System.out.print("\n-> \n");
 					String cpfPaciente = sc.nextLine();
 
 					try {
 						if(pacienteDao.findByCPF(cpfPaciente) == null) {
-							System.out.println("\nNenhum paciente cadastrado com esse CPF");
+							System.out.println("\n❌ Nenhum paciente cadastrado com esse CPF");
 						} else {
+							System.out.println("✅ Paciente localizado com sucesso: ");
 							System.out.println("\n" + pacienteDao.findByCPF(cpfPaciente));
 						}
 					} catch (Exception e) {
@@ -111,7 +112,7 @@ public class Application {
 					
 					try {
 						if(pacienteDao.findAll().isEmpty()) {
-							System.out.println("Nenhum paciente cadastrado!");
+							System.out.println("❌ Nenhum paciente cadastrado!");
 						} else {
 							for (Paciente paciente : pacienteDao.findAll()) {
 								System.out.println(paciente);
@@ -183,7 +184,7 @@ public class Application {
 
 							try {
 								pacienteDao.update(paciente);
-								System.out.println("Paciente atualizado com sucesso!");
+								System.out.println("✅ Paciente atualizado com sucesso!");
 							} catch (Exception e) {
 								throw new DAOException("Não foi possivel atualizar o paciente \n" + e);
 							}
@@ -192,7 +193,7 @@ public class Application {
 							
 						}
 					} else {
-						System.out.println("Paciente não encontrado.");
+						System.out.println("\n❌ Paciente não encontrado.");
 					}
 					
 					break;
@@ -231,14 +232,14 @@ public class Application {
 						pacienteDao.delete(p1);
 						System.out.println("\n✅ Paciente excluído com sucesso!");
 					} else {
-						System.out.println("\nOperação cancelada.");
+						System.out.println("\n❌ Operação cancelada.");
 					}
 
 					break;
 
 					//VOLTAR
 				case 0:
-					System.out.println("Voltando ao menu principal...");
+					System.out.println("🔙 Voltando ao menu principal...");
 					break;
 
 				default:
@@ -295,7 +296,7 @@ public class Application {
 					Exame exame = new Exame(descricao, data, paciente);
 					exameDao.create(exame);
 
-					System.out.println("\nExame adicionado com sucesso!");
+					System.out.println("\n✅ Exame adicionado com sucesso!");
 					break;
 					
 					//LISTAR EXAMES
@@ -336,7 +337,7 @@ public class Application {
 					exameUpdate.setData(LocalDateTime.now());
 
 					exameDao.update(exameUpdate);
-					System.out.println("Exame atualizado com sucesso.");
+					System.out.println("✅ Exame atualizado com sucesso.");
 					break;
 
 					// DELETAR EXAME
@@ -349,14 +350,14 @@ public class Application {
 
 					if (exame1 != null) {
 						exameDao.delete(exame1);
-						System.out.println("Exame excluído com sucesso!");
+						System.out.println("❌ Exame excluído com sucesso!");
 					} else {
-						System.out.println("Exame não encontrado com o ID fornecido.");
+						System.out.println("❌ Exame não encontrado com o ID fornecido.");
 					}
 					break;
 
 				case 0:
-					System.out.println("Voltando ao menu principal...");
+					System.out.println("🔙 Voltando ao menu principal...");
 					break;
 				}
 
