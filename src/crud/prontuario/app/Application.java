@@ -217,9 +217,9 @@ public class Application {
 						System.out.println("\nAtenção: Este paciente possui 1 exame cadastrado.");
 						System.out.println("O exame será excluído junto com o paciente.");
 					} else if (quantidadeDeExames > 1) {
-						System.out.printf("\nAtenção: Este paciente possui %d exames cadastrados.\n",
+						System.out.printf("\nAtenção: Este paciente possui %d exames cadastrados.",
 								quantidadeDeExames);
-						System.out.println("Todos os exames serão excluídos junto com o paciente.");
+						System.out.println("\nTodos os exames serão excluídos junto com o paciente.");
 					} else {
 						System.out.println("\nEste paciente não possui exames cadastrados.");
 					}
@@ -231,8 +231,10 @@ public class Application {
 					if (opt.equalsIgnoreCase("S")) {
 						pacienteDao.delete(p1);
 						System.out.println("\n✅ Paciente excluído com sucesso!");
-					} else {
+					} else if (opt.equalsIgnoreCase("N")) {
 						System.out.println("\n❌ Operação cancelada.");
+					} else {
+						System.out.println("\nSelecione uma opção válida!");
 					}
 
 					break;
@@ -285,7 +287,7 @@ public class Application {
 					Paciente paciente = pacienteDao.findByCPF(cpfExamePaciente);
 
 					if (paciente == null) {
-						System.out.println("Paciente não encontrado com o CPF fornecido.");
+						System.out.println("\nPaciente não encontrado com o CPF fornecido.");
 						break;
 					}
 
@@ -306,7 +308,7 @@ public class Application {
 					System.out.println("\n============================\n");
 
 					if (exames.isEmpty()) {
-						System.out.println("Não há nenhum exame disponível.");
+						System.out.println("\nNão há nenhum exame disponível.");
 					} else {
 						System.out.println("Lista de exames:");
 						for (Exame ex : exames) {
