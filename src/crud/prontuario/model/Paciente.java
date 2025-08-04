@@ -1,5 +1,6 @@
 package crud.prontuario.model;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -9,11 +10,17 @@ public class Paciente {
 	private Long id;
 	private String nome;
 	private String cpf;
+	private LocalDate dataDeNascimento;
 
 	private List<Exame> exames = new ArrayList<Exame>();
+	private Paciente p;
 
 	public Paciente() {
 	}
+
+	public Paciente(Paciente p) {
+		this.p = new Paciente(p.getNome(), p.getCpf(), p.getDataDeNascimento());
+		}
 
 	public Paciente(String cpf) {
 		this.cpf = cpf;
@@ -23,18 +30,32 @@ public class Paciente {
 		this.nome = nome;
 		this.cpf = cpf;
 	}
-
+	
+	public Paciente(String nome, String cpf, LocalDate dataDeNascimento) {
+		this.nome = nome;
+		this.cpf = cpf;
+		this.dataDeNascimento = dataDeNascimento;
+	}
+	
 	public Paciente(Long id, String nome, String cpf) {
 		this.id = id;
 		this.nome = nome;
 		this.cpf = cpf;
 	}
-
+	
 	public Paciente(Long id, String nome, String cpf, List<Exame> exames) {
 		this.id = id;
 		this.nome = nome;
 		this.cpf = cpf;
 		this.exames = exames;
+	}
+	
+	public LocalDate getDataDeNascimento() {
+		return dataDeNascimento;
+	}
+
+	public void setDataDeNascimento(LocalDate dataDeNascimento) {
+		this.dataDeNascimento = dataDeNascimento;
 	}
 
 	public Paciente(Exame exames) {
@@ -83,6 +104,7 @@ public class Paciente {
 	    sb.append("Paciente [id=").append(id)
 	      .append(", nome=").append(nome)
 	      .append(", cpf=").append(cpf)
+	      .append(", data de nascimento=")
 	      .append("]\n");
 
 	    if (exames != null && !exames.isEmpty()) {
