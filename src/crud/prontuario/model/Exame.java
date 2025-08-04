@@ -1,33 +1,35 @@
 package crud.prontuario.model;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class Exame {
 
 	private Long id;
 	private String descricao;
-	private LocalDateTime data;
+	private LocalDate data;
 	private Paciente paciente;
 	
 	public Exame() {}
 
-	public Exame(String descricao, LocalDateTime data, Paciente paciente) {	
+	public Exame(String descricao, LocalDate data, Paciente paciente) {	
 		this.descricao = descricao;
 		this.data = data;
 		this.paciente = paciente;
 	}
 	
-	public Exame(String descricao, LocalDateTime data) {
+	public Exame(String descricao, LocalDate data) {
 		this.descricao = descricao;
 		this.data = data;
 	}	
+	
+	
 
-	public Paciente getpaciente() {
+	public Paciente getPaciente() {
 		return paciente;
 	}
 
-	public void setpaciente(Paciente paciente) {
+	public void setPaciente(Paciente paciente) {
 		this.paciente = paciente;
 	}
 
@@ -47,11 +49,11 @@ public class Exame {
 		this.descricao = descricao;
 	}
 
-	public LocalDateTime getData() {
+	public LocalDate getDataExame() {
 		return data;
 	}
 
-	public void setData(LocalDateTime data) {
+	public void setDataExame(LocalDate data) {
 		this.data = data;
 	}
 

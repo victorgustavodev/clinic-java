@@ -76,24 +76,37 @@ public class PacienteDAO implements IEntityDAO<Paciente> {
 			throw new DAOException("Não foi possivel deletar o paciente. \nErro: " + e);
 		}
 	}
+
 	
+	// Em PacienteDAO.java
+	@Override
 	public Paciente findByCPF(String cpf) {
 	    Paciente paciente = null;
+	    String sql = "SELECT * FROM PACIENTES WHERE cpf = ?;";
+	    
 	    try {
-	        PreparedStatement pstm = conn.getConnection().prepareStatement("SELECT * FROM PACIENTES WHERE cpf = ?;");
+	        PreparedStatement pstm = conn.getConnection().prepareStatement(sql);
 	        pstm.setString(1, cpf);
 	        ResultSet rs = pstm.executeQuery();
-	        if (rs.next()) {
-	            paciente = new Paciente(rs.getLong("id"), rs.getString("nome"), rs.getString("cpf"));
 
-	            // Carregar e setar exames
+	        if (rs.next()) {
+	            // --- CORREÇÃO APLICADA AQUI ---
+	            // Agora estamos lendo a data e usando o construtor correto
+	            paciente = new Paciente(
+	                rs.getLong("id"), 
+	                rs.getString("nome"), 
+	                rs.getString("cpf"),
+	                rs.getDate("dataDeNascimento") // Lendo a data do banco
+	            );
+
+	            // O código para carregar exames continua o mesmo
 	            List<Exame> exames = carregarExames(paciente);
 	            paciente.setExames(exames);
 	        }
 	        rs.close();
 	        pstm.close();
 	    } catch (SQLException e) {
-	    	throw new DAOException("Não foi possivel buscar o paciente. \nErro: " + e);
+	        throw new DAOException("Não foi possivel buscar o paciente. \nErro: " + e);
 	    }
 	    return paciente;
 	}
@@ -129,8 +142,8 @@ public class PacienteDAO implements IEntityDAO<Paciente> {
 	            Exame exame = new Exame();
 	            exame.setId(rs.getLong("id"));
 	            exame.setDescricao(rs.getString("descricao"));
-	            exame.setData(rs.getTimestamp("data_exame").toLocalDateTime());
-	            exame.setpaciente(paciente);
+	            exame.setDataExame(null);
+	            exame.setPaciente(paciente);
 	            exames.add(exame);
 	        }
 
@@ -158,5 +171,12 @@ public class PacienteDAO implements IEntityDAO<Paciente> {
 			throw new DAOException("Não foi possivel atualizar o paciente. \nErro: " + e);
 		}
 	}
+
+	@Override
+	public List<Paciente> findByPacienteName(String s) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 
 }

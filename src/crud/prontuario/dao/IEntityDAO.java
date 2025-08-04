@@ -2,6 +2,7 @@ package crud.prontuario.dao;
 
 import java.util.List;
 
+
 public interface IEntityDAO <T> {
 
 	public void create(T t);
@@ -16,4 +17,6 @@ public interface IEntityDAO <T> {
 
 	public T findByCPF(String s);
 
+	public List<T> findByPacienteName(String s);
+	
 }

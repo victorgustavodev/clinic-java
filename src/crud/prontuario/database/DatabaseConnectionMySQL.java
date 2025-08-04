@@ -39,7 +39,7 @@ public class DatabaseConnectionMySQL implements IConnection {
                             id BIGINT PRIMARY KEY AUTO_INCREMENT,
                             nome VARCHAR(255) NOT NULL,
                             cpf VARCHAR(14) NOT NULL UNIQUE,
-                            dataDeNascimento DATE NOT NULL
+                            dataDeNascimento DATETIME NOT NULL
                         );
                     """;
                     stmt.executeUpdate(sqlPacientes);
@@ -48,7 +48,7 @@ public class DatabaseConnectionMySQL implements IConnection {
                         CREATE TABLE IF NOT EXISTS exames (
                             id BIGINT PRIMARY KEY AUTO_INCREMENT,
                             descricao VARCHAR(255) NOT NULL,
-                            data_exame DATETIME NOT NULL,
+                            data_exame DATE NOT NULL,
                             paciente_id BIGINT,
                             FOREIGN KEY (paciente_id) REFERENCES pacientes(id) ON DELETE CASCADE
                         );

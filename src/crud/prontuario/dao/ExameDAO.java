@@ -3,7 +3,6 @@ package crud.prontuario.dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,20 +20,32 @@ public class ExameDAO implements IEntityDAO<Exame>{
 	
 	@Override
 	public void create(Exame exame) {
-		
-		try {
-			PreparedStatement pstm = conn.getConnection()
-					.prepareStatement("INSERT INTO exames (descricao, data_exame, paciente_id) VALUES (?, ?, ?);");
-			
-			pstm.setString(1, exame.getDescricao());
-			pstm.setTimestamp(2, Timestamp.valueOf(exame.getData()));
-			pstm.setLong(3, exame.getpaciente().getId());
-			
-			pstm.execute();
-			pstm.close();
-		} catch (SQLException e) {
-			throw new DAOException("Não foi possivel criar o exame. \nErro: " + e);
-		}
+	    // A query SQL está correta.
+	    String sql = "INSERT INTO exames (descricao, data_exame, paciente_id) VALUES (?, ?, ?)";
+
+	    try {
+	        PreparedStatement pstm = conn.getConnection().prepareStatement(sql);
+
+	        // Define a descrição (parâmetro 1)
+	        pstm.setString(1, exame.getDescricao());
+
+	        // --- CORREÇÃO APLICADA AQUI ---
+	        // Converte o LocalDate do objeto Exame para um java.sql.Date
+	        java.sql.Date dataSql = java.sql.Date.valueOf(exame.getDataExame()); // Supondo que o getter se chame getDataExame()
+	        
+	        // Define a data usando setDate (parâmetro 2)
+	        pstm.setDate(2, dataSql);
+	        
+	        // Define o ID do paciente (parâmetro 3)
+	        pstm.setLong(3, exame.getPaciente().getId());
+
+	        pstm.execute();
+	        pstm.close();
+
+	    } catch (SQLException e) {
+	        // O tratamento da exceção está bom.
+	        throw new DAOException("Não foi possivel criar o exame. \nErro: " + e);
+	    }
 	}
 	
 	@Override
@@ -56,13 +67,60 @@ public class ExameDAO implements IEntityDAO<Exame>{
 				exame.setId(rs.getLong("id"));
 				exame.setDescricao(rs.getString("descricao"));
 				
-				exame.setData(rs.getTimestamp("data_exame").toLocalDateTime());
+				exame.setDataExame(null);
 			}
 			pstm.close();
 		} catch (SQLException e) {
 			throw new DAOException("Não foi possivel localizar o exame. \nErro: " + e);
 		}
 		return exame;
+	}
+	
+	// Adicione este método dentro da sua classe ExameDAO.java
+	@Override
+	public List<Exame> findByPacienteName(String nome) {
+	    List<Exame> examesEncontrados = new ArrayList<>();
+	    
+	    // SQL com JOIN para buscar exames pelo nome do paciente
+	    String sql = "SELECT e.id, e.descricao, e.data_exame, p.id as paciente_id, p.nome as paciente_nome, p.cpf as paciente_cpf " +
+	                 "FROM exames e " +
+	                 "JOIN pacientes p ON e.paciente_id = p.id " +
+	                 "WHERE p.nome LIKE ?";
+
+	    try {
+	        PreparedStatement pstm = conn.getConnection().prepareStatement(sql);
+	        // Usa o operador LIKE para buscas parciais (ex: "jo" encontra "João")
+	        pstm.setString(1, "%" + nome + "%"); 
+	        
+	        ResultSet rs = pstm.executeQuery();
+
+	        while (rs.next()) {
+	            // Cria um objeto Paciente com os dados retornados da tabela de pacientes
+	            Paciente paciente = new Paciente();
+	            paciente.setId(rs.getLong("paciente_id"));
+	            paciente.setNome(rs.getString("paciente_nome"));
+	            paciente.setCpf(rs.getString("paciente_cpf"));
+	            
+	            // Cria o objeto Exame com seus dados
+	            Exame exame = new Exame();
+	            exame.setId(rs.getLong("id"));
+	            exame.setDescricao(rs.getString("descricao"));
+	            exame.setDataExame(rs.getDate("data_exame").toLocalDate());
+	            
+	            // Associa o objeto paciente completo ao exame
+	            exame.setPaciente(paciente);
+	            
+	            examesEncontrados.add(exame);
+	        }
+	        
+	        pstm.close();
+	        rs.close();
+
+	    } catch (SQLException e) {
+	        throw new DAOException("Erro ao buscar exames por nome de paciente.", e);
+	    }
+	    
+	    return examesEncontrados;
 	}
 	
 	@Override
@@ -93,11 +151,11 @@ public class ExameDAO implements IEntityDAO<Exame>{
                 Exame exame = new Exame();
                 exame.setId(rs.getLong("id"));
                 exame.setDescricao(rs.getString("descricao"));
-                exame.setData(rs.getTimestamp("data_exame").toLocalDateTime());
+                exame.setDataExame(null);
 
                 Paciente paciente = new Paciente();
                 paciente.setId(rs.getLong("paciente_id"));
-                exame.setpaciente(paciente);
+                exame.setPaciente(paciente);
 
                 exames.add(exame);
             }
@@ -117,7 +175,7 @@ public class ExameDAO implements IEntityDAO<Exame>{
 					.prepareStatement(sql);
 			
 			pstm.setString(1, exame.getDescricao());
-			pstm.setTimestamp(2, Timestamp.valueOf(exame.getData()));
+//			pstm.setTimestamp(2, Timestamp.valueOf(exame.getDataExame()));
 			pstm.setLong(3, exame.getId());
 			pstm.execute();
 			pstm.close();
