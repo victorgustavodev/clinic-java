@@ -1,5 +1,6 @@
 package crud.prontuario.model;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +20,10 @@ public class Paciente {
 	}
 
 	public Paciente(Paciente p) {
-		this.p = new Paciente(p.getNome(), p.getCpf(), p.getDataDeNascimento());
+		this.setP(new Paciente(p.getNome(), p.getCpf(), p.getDataDeNascimento()));
 		}
 
+	
 	public Paciente(String cpf) {
 		this.cpf = cpf;
 	}
@@ -37,6 +39,17 @@ public class Paciente {
 		this.dataDeNascimento = dataDeNascimento;
 	}
 	
+	public Paciente(Long id, String nome, String cpf, Date dataDeNascimento) {
+		this.id = id;
+		this.nome = nome;
+		this.cpf = cpf;
+	    if (dataDeNascimento != null) {
+	        this.dataDeNascimento = dataDeNascimento.toLocalDate();
+	    } else {
+	        this.dataDeNascimento = null;
+	    }
+	}
+	
 	public Paciente(Long id, String nome, String cpf) {
 		this.id = id;
 		this.nome = nome;
@@ -49,7 +62,7 @@ public class Paciente {
 		this.cpf = cpf;
 		this.exames = exames;
 	}
-	
+
 	public LocalDate getDataDeNascimento() {
 		return dataDeNascimento;
 	}
@@ -131,6 +144,14 @@ public class Paciente {
 			return false;
 		Paciente other = (Paciente) obj;
 		return Objects.equals(cpf, other.cpf);
+	}
+
+	public Paciente getP() {
+		return p;
+	}
+
+	public void setP(Paciente p) {
+		this.p = p;
 	}
 
 }

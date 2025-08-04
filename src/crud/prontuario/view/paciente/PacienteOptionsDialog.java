@@ -14,12 +14,14 @@ public class PacienteOptionsDialog extends JDialog {
         setLocationRelativeTo(parent);
 
         JButton btnCriar = new JButton("Criar Paciente");
+        JButton btnListar = new JButton("Listar Pacientes");
         JButton btnEditar = new JButton("Editar Paciente");
         JButton btnLocalizar = new JButton("Localizar Paciente");
         JButton btnDeletar = new JButton("Deletar Paciente");
         JButton btnSair = new JButton("Sair");
 
         add(btnCriar);
+        add(btnListar);
         add(btnEditar);
         add(btnLocalizar);
         add(btnDeletar);
@@ -34,11 +36,16 @@ public class PacienteOptionsDialog extends JDialog {
         btnEditar.addActionListener(e -> {
             new PacienteEditDialog(null).setVisible(true);
         });
+        
+        btnListar.addActionListener(e -> {
+        	new PacienteListDialog(null).setVisible(true);
+        });
 //
 //        btnLocalizar.addActionListener(e -> {
-//            new PacienteSearchDialog(this).setVisible(true);
+//            new PacienteSearchDialog(null).setVisible(true);
 //        });
 //
+        
         btnDeletar.addActionListener(e -> {
             new PacienteDeleteDialog(null).setVisible(true);
         });

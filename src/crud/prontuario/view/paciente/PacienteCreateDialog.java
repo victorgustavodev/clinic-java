@@ -91,7 +91,7 @@ public class PacienteCreateDialog extends JDialog {
             return;
         }
 
-        Paciente paciente = new Paciente(nome, cpf, dataNascimento); // Certifique-se que o construtor aceita LocalDate
+        Paciente paciente = new Paciente(nome, cpf, dataNascimento);
         pacienteDao.create(paciente);
 
         JOptionPane.showMessageDialog(this, "Paciente salvo com sucesso.");

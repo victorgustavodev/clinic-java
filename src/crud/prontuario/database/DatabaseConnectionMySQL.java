@@ -38,7 +38,8 @@ public class DatabaseConnectionMySQL implements IConnection {
                         CREATE TABLE IF NOT EXISTS pacientes (
                             id BIGINT PRIMARY KEY AUTO_INCREMENT,
                             nome VARCHAR(255) NOT NULL,
-                            cpf VARCHAR(14) NOT NULL UNIQUE
+                            cpf VARCHAR(14) NOT NULL UNIQUE,
+                            dataDeNascimento DATE NOT NULL
                         );
                     """;
                     stmt.executeUpdate(sqlPacientes);

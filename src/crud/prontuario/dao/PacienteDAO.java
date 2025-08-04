@@ -1,5 +1,6 @@
 package crud.prontuario.dao;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,13 +20,19 @@ public class PacienteDAO implements IEntityDAO<Paciente> {
 		this.conn = connection;
 	}
 
+	
+	
 	@Override
 	public void create(Paciente t) {
+		
+		Date dob = Date.valueOf(t.getDataDeNascimento());
+				
 		try {
 			PreparedStatement pstm = conn.getConnection()
-					.prepareStatement("INSERT INTO PACIENTES (nome, cpf) VALUES (?, ?);");
+			.prepareStatement("INSERT INTO PACIENTES (nome, cpf, dataDeNascimento) VALUES (?, ?, ?);");
 			pstm.setString(1, t.getNome());
 			pstm.setString(2, t.getCpf());
+			pstm.setDate(3, dob);
 			pstm.executeUpdate();
 			pstm.close();
 		} catch (SQLException e) {
@@ -100,8 +107,7 @@ public class PacienteDAO implements IEntityDAO<Paciente> {
 	        ResultSet rs = pstm.executeQuery();
 
 	        while (rs.next()) {
-	            Paciente paciente = new Paciente(rs.getLong("id"), rs.getString("nome"), rs.getString("cpf"));
-	            
+	            Paciente paciente = new Paciente(rs.getLong("id"), rs.getString("nome"), rs.getString("cpf"), rs.getDate("dataDeNascimento"));    
 	            pacientes.add(paciente);
 	        }
 	        pstm.close();
