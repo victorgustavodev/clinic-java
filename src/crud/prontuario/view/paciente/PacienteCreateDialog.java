@@ -28,7 +28,7 @@ public class PacienteCreateDialog extends JDialog {
     
     public PacienteCreateDialog(Frame parent) {
         super(parent, "Cadastrar Paciente", true);
-        setLayout(new GridLayout(5, 2, 10, 10));
+        setLayout(new GridLayout(16, 2, 10, 10));
         setSize(800, 600);
         setLocationRelativeTo(parent);
 

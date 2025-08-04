@@ -11,10 +11,10 @@ public class MainWindow extends JFrame {
 
     public MainWindow() {
         setTitle("Prontuário Médico");
-        setSize(400, 200);
+        setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(3, 1, 10, 10));
+        setLayout(new GridLayout(10, 1, 10, 10));
 
         JLabel titulo = new JLabel("Sistema de Gerenciamento Clínico", JLabel.CENTER);
         titulo.setFont(new Font("Arial", Font.BOLD, 16));
@@ -30,7 +30,7 @@ public class MainWindow extends JFrame {
 
         btnExames.addActionListener(e -> {
             dispose(); // fecha a MainWindow
-//            new ExameOptionsDialog(null).setVisible(true); // substitua pelo painel real que você tiver
+            new ExameOptionsDialog(null).setVisible(true); // substitua pelo painel real que você tiver
         });
 
         // Adiciona os componentes à janela

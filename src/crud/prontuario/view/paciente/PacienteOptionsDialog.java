@@ -9,7 +9,7 @@ public class PacienteOptionsDialog extends JDialog {
 
 	public PacienteOptionsDialog(Frame parent) {
         super(parent, "Opções de Paciente", true);
-        setLayout(new GridLayout(5, 1, 10, 10));
+        setLayout(new GridLayout(10, 1, 10, 20));
         setSize(800, 600);
         setLocationRelativeTo(parent);
 
@@ -30,15 +30,18 @@ public class PacienteOptionsDialog extends JDialog {
 //
         // Ações dos botões
         btnCriar.addActionListener(e -> {
-        	new PacienteCreateDialog(null).setVisible(true);
+        	dispose();
+        	new PacienteCreateDialog(parent).setVisible(true);
         });
 
         btnEditar.addActionListener(e -> {
+        	dispose();
             new PacienteEditDialog(null).setVisible(true);
         });
         
         btnListar.addActionListener(e -> {
-        	new PacienteListDialog(null).setVisible(true);
+        	dispose();
+        	new PacienteListDialog(parent).setVisible(true);
         });
 //
 //        btnLocalizar.addActionListener(e -> {
