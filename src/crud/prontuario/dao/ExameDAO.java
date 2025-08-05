@@ -157,9 +157,6 @@ public class ExameDAO implements IEntityDAO<Exame> {
 		return exames;
 	}
 
-//    * CORRIGIDO: O método update agora inclui o paciente_id e a data_exame,
-//    * permitindo que todas as alterações feitas na tela sejam salvas.
-
 	@Override
 	public void update(Exame exame) {
 		String sql = "UPDATE exames SET descricao = ?, data_exame = ?, paciente_id = ? WHERE id = ?;";
