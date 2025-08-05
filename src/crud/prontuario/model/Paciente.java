@@ -19,9 +19,6 @@ public class Paciente {
 	public Paciente() {
 	}
 
-	public Paciente(Paciente p) {
-		this.setP(new Paciente(p.getNome(), p.getCpf(), p.getDataDeNascimento()));
-		}
 
 	
 	public Paciente(String cpf) {
@@ -39,15 +36,12 @@ public class Paciente {
 		this.dataDeNascimento = dataDeNascimento;
 	}
 	
+	//Recebo a Data de nascimento como Date e instancio como LocalDate
 	public Paciente(Long id, String nome, String cpf, Date dataDeNascimento) {
 		this.id = id;
 		this.nome = nome;
 		this.cpf = cpf;
-	    if (dataDeNascimento != null) {
-	        this.dataDeNascimento = dataDeNascimento.toLocalDate();
-	    } else {
-	        this.dataDeNascimento = null;
-	    }
+		this.dataDeNascimento = dataDeNascimento.toLocalDate();
 	}
 	
 	public Paciente(Long id, String nome, String cpf) {

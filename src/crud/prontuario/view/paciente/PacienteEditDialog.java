@@ -25,46 +25,39 @@ public class PacienteEditDialog extends JDialog {
     private JTable tabelaPacientes;
     private DefaultTableModel modeloTabela;
     private JTextField nomeField;
-    private JFormattedTextField cpfField; // Alterado para JFormattedTextField para consistência
+    private JFormattedTextField cpfField;
     private JFormattedTextField dataNascimentoField;
     private JButton btnAtualizar;
     private JButton btnSair;
 
     // --- Lógica de Negócio ---
     private final PacienteDAO pacienteDao;
-    private List<Paciente> listaPacientes; // Armazena a lista de pacientes carregada para evitar múltiplas chamadas ao BD
-    private Paciente pacienteSelecionado; // Armazena o objeto do paciente selecionado na tabela
+    private List<Paciente> listaPacientes;
+    private Paciente pacienteSelecionado;
 
     public PacienteEditDialog(Frame parent) {
         super(parent, "Edição de Paciente", true);
-
-        // A conexão deve ser idealmente injetada, mas vamos instanciá-la aqui para o exemplo
+        
         IConnection dbConnection = new DatabaseConnectionMySQL();
         this.pacienteDao = new PacienteDAO(dbConnection);
 
-        // Configuração geral do layout do Dialog
         setLayout(new BorderLayout(10, 10));
         setSize(800, 600);
         setLocationRelativeTo(parent);
 
-        // --- PAINEL NORTE: Tabela de Pacientes ---
         criarPainelTabela();
         add(new JScrollPane(tabelaPacientes), BorderLayout.NORTH);
 
-        // --- PAINEL CENTRAL: Formulário de Edição ---
         criarPainelFormulario();
         add(criarPainelFormulario(), BorderLayout.CENTER);
 
-        // --- PAINEL SUL: Botões de Ação ---
         criarPainelBotoes();
         add(criarPainelBotoes(), BorderLayout.SOUTH);
 
-        // Carrega os dados iniciais na tabela
         carregarPacientesNaTabela();
 
-        // Adiciona o listener para seleção de linha
         tabelaPacientes.getSelectionModel().addListSelectionListener(e -> {
-            // O 'if' evita que o evento seja disparado duas vezes (ao soltar o mouse)
+            
             if (!e.getValueIsAdjusting()) {
                 preencherCamposComSelecao();
             }
@@ -73,9 +66,7 @@ public class PacienteEditDialog extends JDialog {
 
     private void criarPainelTabela() {
         modeloTabela = new DefaultTableModel(new Object[]{"ID", "Nome", "CPF", "Data de Nascimento"}, 0) {
-            /**
-			 * 
-			 */
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -137,7 +128,7 @@ public class PacienteEditDialog extends JDialog {
     private void carregarPacientesNaTabela() {
         modeloTabela.setRowCount(0); // Limpa a tabela
         try {
-            this.listaPacientes = pacienteDao.findAll(); // Armazena a lista localmente
+            this.listaPacientes = pacienteDao.findAll();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             for (Paciente p : listaPacientes) {
                 String dataFormatada = (p.getDataDeNascimento() != null) ? p.getDataDeNascimento().format(formatter) : "";
@@ -150,8 +141,7 @@ public class PacienteEditDialog extends JDialog {
 
     private void preencherCamposComSelecao() {
         int selectedRow = tabelaPacientes.getSelectedRow();
-        if (selectedRow != -1) { // -1 significa que nenhuma linha está selecionada
-            // Pega o paciente da lista local, usando o índice da linha da tabela
+        if (selectedRow != -1) {
             pacienteSelecionado = listaPacientes.get(selectedRow);
 
             nomeField.setText(pacienteSelecionado.getNome());
@@ -164,7 +154,7 @@ public class PacienteEditDialog extends JDialog {
                 dataNascimentoField.setText("");
             }
         } else {
-            // Se nenhuma linha for selecionada (ou a seleção for limpa), reseta os campos
+
             pacienteSelecionado = null;
             nomeField.setText("");
             cpfField.setText("");
@@ -178,12 +168,10 @@ public class PacienteEditDialog extends JDialog {
             return;
         }
 
-        // 1. Pega os dados dos campos de texto (os dados novos)
         String nomeNovo = nomeField.getText().trim();
-        String cpfNovo = cpfField.getText().replaceAll("[._-]", ""); // Remove máscara para validação
+        String cpfNovo = cpfField.getText().replaceAll("[._-]", "");
         String nascimentoStrNovo = dataNascimentoField.getText();
 
-        // 2. Validações
         if (nomeNovo.isEmpty() || cpfNovo.length() != 11 || nascimentoStrNovo.contains("_")) {
             JOptionPane.showMessageDialog(this, "Todos os campos devem ser preenchidos corretamente.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
             return;
@@ -198,9 +186,8 @@ public class PacienteEditDialog extends JDialog {
             return;
         }
 
-        // 3. Compara os dados novos com os do objeto selecionado
         boolean nomeMudou = !Objects.equals(nomeNovo, pacienteSelecionado.getNome());
-        boolean cpfMudou = !Objects.equals(cpfField.getText(), pacienteSelecionado.getCpf()); // Compara com máscara
+        boolean cpfMudou = !Objects.equals(cpfField.getText(), pacienteSelecionado.getCpf());
         boolean dataMudou = !Objects.equals(dataNascimentoNova, pacienteSelecionado.getDataDeNascimento());
 
         if (!nomeMudou && !cpfMudou && !dataMudou) {
@@ -208,17 +195,15 @@ public class PacienteEditDialog extends JDialog {
             return;
         }
 
-        // 4. Se houve mudanças, atualiza o objeto 'Paciente'
         pacienteSelecionado.setNome(nomeNovo);
-        pacienteSelecionado.setCpf(cpfField.getText()); // Salva com a máscara
+        pacienteSelecionado.setCpf(cpfField.getText()); 
         pacienteSelecionado.setDataDeNascimento(dataNascimentoNova);
 
-        // 5. Tenta persistir a atualização no banco de dados
         try {
             pacienteDao.update(pacienteSelecionado);
             JOptionPane.showMessageDialog(this, "✅ Paciente atualizado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             
-            // Atualiza a tabela para refletir a mudança
+            
             carregarPacientesNaTabela();
         } catch (DAOException e) {
             JOptionPane.showMessageDialog(this, "Não foi possível atualizar o paciente.\n" + e.getMessage(), "Erro no Banco de Dados", JOptionPane.ERROR_MESSAGE);

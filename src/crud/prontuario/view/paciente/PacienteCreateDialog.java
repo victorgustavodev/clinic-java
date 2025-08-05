@@ -18,47 +18,60 @@ public class PacienteCreateDialog extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 
-	private JTextField Nome;
-    private JTextField Cpf;
-    private JFormattedTextField DataDeNascimento;
-
+    // ALTERADO: Nomes de variáveis seguindo a convenção Java (camelCase)
+	private JTextField nomeField;
+    private JFormattedTextField cpfField; // ALTERADO: de JTextField para JFormattedTextField
+    private JFormattedTextField dataDeNascimentoField;
 
     IEntityDAO<Paciente> pacienteDao = new PacienteDAO(new DatabaseConnectionMySQL());
-
     
     public PacienteCreateDialog(Frame parent) {
         super(parent, "Cadastrar Paciente", true);
-        setLayout(new GridLayout(16, 2, 10, 10));
-        setSize(800, 600);
+        setLayout(new GridLayout(5, 2, 10, 10)); // Layout ajustado para menos linhas
+        setSize(500, 250); // Tamanho ajustado para o conteúdo
         setLocationRelativeTo(parent);
 
         // Componentes
         add(new JLabel("Nome:"));
-        Nome = new JTextField();
-        Nome.setMaximumSize(new Dimension(300, 30));
-        add(Nome);
+        nomeField = new JTextField();
+        add(nomeField);
 
         add(new JLabel("CPF (XXX.XXX.XXX-XX):"));
-        Cpf = new JTextField();
-        add(Cpf);
+        // NOVO: Bloco try-catch para criar o JFormattedTextField do CPF com a máscara
+        try {
+            MaskFormatter mascaraCpf = new MaskFormatter("###.###.###-##");
+            mascaraCpf.setPlaceholderCharacter('_');
+            cpfField = new JFormattedTextField(mascaraCpf);
+        } catch (ParseException e) {
+            cpfField = new JFormattedTextField(); // Fallback
+            e.printStackTrace();
+        }
+        add(cpfField);
 
         add(new JLabel("Data de Nascimento (DD/MM/AAAA):"));
         try {
             MaskFormatter mascaraData = new MaskFormatter("##/##/####");
             mascaraData.setPlaceholderCharacter('_');
-            DataDeNascimento = new JFormattedTextField(mascaraData);
+            dataDeNascimentoField = new JFormattedTextField(mascaraData);
         } catch (ParseException e) {
-            DataDeNascimento = new JFormattedTextField(); // fallback
+            dataDeNascimentoField = new JFormattedTextField(); // Fallback
+            e.printStackTrace();
         }
-        add(DataDeNascimento);
+        add(dataDeNascimentoField);
 
         JButton btnSalvar = new JButton("Salvar");
-        JButton btnLimpar = new JButton("Limpar");
-        JButton btnSair = new JButton("Sair");
-
         add(btnSalvar);
+
+        JButton btnLimpar = new JButton("Limpar");
         add(btnLimpar);
+        
+        // Botão Sair adicionado para fechar a janela
+        JButton btnSair = new JButton("Sair");
         add(btnSair);
+        
+        // Painel vazio para preencher o layout se necessário
+        add(new JLabel("")); 
+
 
         // Eventos
         btnSalvar.addActionListener(e -> salvarPaciente());
@@ -67,40 +80,44 @@ public class PacienteCreateDialog extends JDialog {
     }
 
     private void salvarPaciente() {
-        String nome = Nome.getText().trim();
-        String cpf = Cpf.getText().trim();
-        String nascimentoStr = DataDeNascimento.getText().trim();
+        String nome = nomeField.getText().trim();
+        // getText() já retorna a string com a máscara
+        String cpf = cpfField.getText();
+        String nascimentoStr = dataDeNascimentoField.getText();
 
-        if (nome.isEmpty() || cpf.isEmpty() || nascimentoStr.contains("_")) {
-            JOptionPane.showMessageDialog(this, "Todos os campos devem ser preenchidos corretamente.");
+        // ALTERADO: Validação unificada para checar se campos estão preenchidos (sem o '_')
+        if (nome.isEmpty() || cpf.contains("_") || nascimentoStr.contains("_")) {
+            JOptionPane.showMessageDialog(this, "Todos os campos devem ser preenchidos completamente.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
             return;
         }
+        
+        // REMOVIDO: A validação com regex se torna redundante, pois a máscara já força o formato.
+        // A checagem por "_" já garante que o campo foi todo preenchido.
 
-        if (!cpf.matches("\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}")) {
-            JOptionPane.showMessageDialog(this, "CPF inválido. Use o formato XXX.XXX.XXX-XX.");
-            return;
-        }
-
-        // Converter a string para LocalDate
         LocalDate dataNascimento;
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             dataNascimento = LocalDate.parse(nascimentoStr, formatter);
         } catch (DateTimeParseException e) {
-            JOptionPane.showMessageDialog(this, "Data de nascimento inválida. Use o formato DD/MM/AAAA.");
+            JOptionPane.showMessageDialog(this, "Data de nascimento inválida. Use o formato DD/MM/AAAA.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        Paciente paciente = new Paciente(nome, cpf, dataNascimento);
-        pacienteDao.create(paciente);
-
-        JOptionPane.showMessageDialog(this, "Paciente salvo com sucesso.");
-        dispose();
+        // Criando o paciente com os dados validados
+        try {
+            Paciente paciente = new Paciente(nome, cpf, dataNascimento);
+            pacienteDao.create(paciente); // Supondo que o método create exista no DAO
+            JOptionPane.showMessageDialog(this, "✅ Paciente salvo com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            dispose(); // Fecha a janela após salvar
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Ocorreu um erro ao salvar o paciente:\n" + e.getMessage(), "Erro no Banco de Dados", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }
 
     private void limparCampos() {
-        Nome.setText("");
-        Cpf.setText("");
-        DataDeNascimento.setText("");
+        nomeField.setText("");
+        cpfField.setValue(null); // .setValue(null) é a forma correta de limpar um JFormattedTextField
+        dataDeNascimentoField.setValue(null);
     }
 }

@@ -11,10 +11,10 @@ public class MainWindow extends JFrame {
     private static final long serialVersionUID = 1L;
 
     public MainWindow() {
-        // --- 1. Configuração da Janela Principal ---
+        
         setTitle("Sistema de Gerenciamento de Prontuários");
         setSize(800, 600);
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); // Controlamos o fechamento manualmente
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
@@ -22,12 +22,12 @@ public class MainWindow extends JFrame {
         
      // --- Menu: Pacientes ---
         JMenu menuPacientes = new JMenu("Pacientes");
-        JMenuItem btnNovoPaciente = new JMenuItem("Novo Paciente");
+        JMenuItem btnCriarPaciente = new JMenuItem("Criar Paciente");
         JMenuItem btnLocalizarPaciente = new JMenuItem("Localizar");
         JMenuItem btnEditarPaciente = new JMenuItem("Editar");
         JMenuItem btnExcluirPaciente = new JMenuItem("Excluir");
         
-        menuPacientes.add(btnNovoPaciente);
+        menuPacientes.add(btnCriarPaciente);
         menuPacientes.add(btnLocalizarPaciente);
         menuPacientes.add(btnEditarPaciente);
         menuPacientes.add(btnExcluirPaciente);
@@ -35,12 +35,12 @@ public class MainWindow extends JFrame {
 
         // --- Menu: Exames ---
         JMenu menuExames = new JMenu("Exames");
-        JMenuItem btnNovoExame = new JMenuItem("Novo Exame");
+        JMenuItem btnCriarExame = new JMenuItem("Criar Exame");
         JMenuItem btnLocalizarExame = new JMenuItem("Localizar");
         JMenuItem btnEditarExame = new JMenuItem("Editar");
         JMenuItem btnExcluirExame = new JMenuItem("Excluir");
         
-        menuExames.add(btnNovoExame);
+        menuExames.add(btnCriarExame);
         menuExames.add(btnLocalizarExame);
         menuExames.add(btnEditarExame);
         menuExames.add(btnExcluirExame);
@@ -65,7 +65,7 @@ public class MainWindow extends JFrame {
 
         
         //-------PACIENTES--------
-        btnNovoPaciente.addActionListener(e -> {
+        btnCriarPaciente.addActionListener(e -> {
             PacienteCreateDialog createDialog = new PacienteCreateDialog(null);
             createDialog.setVisible(true);
         });
@@ -89,7 +89,7 @@ public class MainWindow extends JFrame {
         );
         
         //-------EXAMES--------
-        btnNovoExame.addActionListener(e -> {
+        btnCriarExame.addActionListener(e -> {
             ExameCreateDialog createExameDialog = new ExameCreateDialog(this);
             createExameDialog.setVisible(true);
         });
@@ -99,17 +99,11 @@ public class MainWindow extends JFrame {
         	ExameSearchDialog listDialog = new ExameSearchDialog(null);
         	listDialog.setVisible(true);
         });
-        
-//        btnListarExame.addActionListener(e -> {
-//        	ExameListDialog listDialog = new ExameListDialog(null);
-//        	listDialog.setVisible(true);
-//        });
-        
-        
-//        btnEditarExame.addActionListener(e -> {
-//        	ExameEditDialog editDialog = new ExameEditDialog(null);
-//            editDialog.setVisible(true);
-//        });
+                 
+        btnEditarExame.addActionListener(e -> {
+        	ExameEditDialog editDialog = new ExameEditDialog(null);
+            editDialog.setVisible(true);
+        });
         
         btnExcluirExame.addActionListener(e -> {
         	ExameDeleteDialog deleteDialog = new ExameDeleteDialog(null);
@@ -119,7 +113,6 @@ public class MainWindow extends JFrame {
 
         itemSair.addActionListener(e -> fecharAplicacao());
         
-        // Adiciona um listener para o botão de fechar da janela (o "X")
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
@@ -128,9 +121,6 @@ public class MainWindow extends JFrame {
         });
     }
 
-    /**
-     * Método centralizado para fechar a aplicação com confirmação.
-     */
     private void fecharAplicacao() {
         int resposta = JOptionPane.showConfirmDialog(
             this,
@@ -145,9 +135,6 @@ public class MainWindow extends JFrame {
         }
     }
 
-    /**
-     * Ponto de entrada da aplicação.
-     */
     public static void main(String[] args) {
         // Garante que a interface gráfica seja criada na thread de eventos do Swing
         SwingUtilities.invokeLater(new Runnable() {
