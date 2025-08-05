@@ -82,8 +82,7 @@ public class PacienteSearchDialog extends JDialog {
                 if (!termoBusca.matches("\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}")) {
                     JOptionPane.showMessageDialog(this, "Formato de CPF inválido. Use XXX.XXX.XXX-XX", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
                     return;
-                }
-                
+                }               
                 
                 Paciente p = ((PacienteDAO) pacienteDao).findByCPF(termoBusca);
                 if (p != null) {

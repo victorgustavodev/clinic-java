@@ -19,8 +19,6 @@ public class PacienteDAO implements IEntityDAO<Paciente> {
 	public PacienteDAO(IConnection connection) {
 		this.conn = connection;
 	}
-
-	
 	
 	@Override
 	public void create(Paciente t) {

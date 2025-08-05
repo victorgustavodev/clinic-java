@@ -1,19 +1,20 @@
 package crud.prontuario.view.paciente;
 
-import javax.swing.*;
-import javax.swing.text.MaskFormatter;
-
-import crud.prontuario.dao.IEntityDAO;
 import crud.prontuario.dao.PacienteDAO;
-import crud.prontuario.database.DatabaseConnectionMySQL;
+import crud.prontuario.database.IConnection;
+import crud.prontuario.database.DatabaseConnectionMySQL; // Supondo que você use esta conexão
 import crud.prontuario.model.Paciente;
 import crud.prontuario.exception.DAOException;
 
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Objects;
 
 public class PacienteEditDialog extends JDialog {
@@ -21,103 +22,173 @@ public class PacienteEditDialog extends JDialog {
     private static final long serialVersionUID = 1L;
 
     // --- Componentes da Interface ---
+    private JTable tabelaPacientes;
+    private DefaultTableModel modeloTabela;
     private JTextField nomeField;
-    private JTextField cpfField;
+    private JFormattedTextField cpfField; // Alterado para JFormattedTextField para consistência
     private JFormattedTextField dataNascimentoField;
+    private JButton btnAtualizar;
+    private JButton btnSair;
 
     // --- Lógica de Negócio ---
-    private final IEntityDAO<Paciente> pacienteDao = new PacienteDAO(new DatabaseConnectionMySQL());
-    private final Paciente pacienteParaEditar;
-
-    // NOVO: Variáveis para armazenar os dados originais do paciente
-    private String nomeOriginal;
-    private String cpfOriginal;
-    private LocalDate dataNascimentoOriginal;
+    private final PacienteDAO pacienteDao;
+    private List<Paciente> listaPacientes; // Armazena a lista de pacientes carregada para evitar múltiplas chamadas ao BD
+    private Paciente pacienteSelecionado; // Armazena o objeto do paciente selecionado na tabela
 
     public PacienteEditDialog(Frame parent) {
-        super(parent, "Editar Paciente", true);
-        
-        
-        Paciente paciente = new Paciente();
-        
-		this.pacienteParaEditar = paciente;
+        super(parent, "Edição de Paciente", true);
 
-        // NOVO: Armazena os dados originais assim que a janela é criada
-        if (paciente != null) {
-            this.nomeOriginal = paciente.getNome();
-            this.cpfOriginal = paciente.getCpf();
-            this.dataNascimentoOriginal = paciente.getDataDeNascimento();
-        }
+        // A conexão deve ser idealmente injetada, mas vamos instanciá-la aqui para o exemplo
+        IConnection dbConnection = new DatabaseConnectionMySQL();
+        this.pacienteDao = new PacienteDAO(dbConnection);
 
-        setLayout(new GridLayout(5, 2, 10, 10));
+        // Configuração geral do layout do Dialog
+        setLayout(new BorderLayout(10, 10));
         setSize(800, 600);
         setLocationRelativeTo(parent);
 
-        // --- Componentes ---
-        add(new JLabel("Nome:"));
+        // --- PAINEL NORTE: Tabela de Pacientes ---
+        criarPainelTabela();
+        add(new JScrollPane(tabelaPacientes), BorderLayout.NORTH);
+
+        // --- PAINEL CENTRAL: Formulário de Edição ---
+        criarPainelFormulario();
+        add(criarPainelFormulario(), BorderLayout.CENTER);
+
+        // --- PAINEL SUL: Botões de Ação ---
+        criarPainelBotoes();
+        add(criarPainelBotoes(), BorderLayout.SOUTH);
+
+        // Carrega os dados iniciais na tabela
+        carregarPacientesNaTabela();
+
+        // Adiciona o listener para seleção de linha
+        tabelaPacientes.getSelectionModel().addListSelectionListener(e -> {
+            // O 'if' evita que o evento seja disparado duas vezes (ao soltar o mouse)
+            if (!e.getValueIsAdjusting()) {
+                preencherCamposComSelecao();
+            }
+        });
+    }
+
+    private void criarPainelTabela() {
+        modeloTabela = new DefaultTableModel(new Object[]{"ID", "Nome", "CPF", "Data de Nascimento"}, 0) {
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        tabelaPacientes = new JTable(modeloTabela);
+        tabelaPacientes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    }
+
+    private JPanel criarPainelFormulario() {
+        JPanel painelFormulario = new JPanel(new GridLayout(3, 2, 5, 5));
+        painelFormulario.setBorder(BorderFactory.createTitledBorder("Dados para Edição"));
+
         nomeField = new JTextField();
-        add(nomeField);
+        painelFormulario.add(new JLabel("Nome:"));
+        painelFormulario.add(nomeField);
 
-        add(new JLabel("CPF (XXX.XXX.XXX-XX):"));
-        cpfField = new JTextField();
-        add(cpfField);
+        try {
+            MaskFormatter mascaraCpf = new MaskFormatter("###.###.###-##");
+            mascaraCpf.setPlaceholderCharacter('_');
+            cpfField = new JFormattedTextField(mascaraCpf);
+        } catch (ParseException e) {
+            cpfField = new JFormattedTextField();
+            e.printStackTrace();
+        }
+        painelFormulario.add(new JLabel("CPF:"));
+        painelFormulario.add(cpfField);
 
-        add(new JLabel("Data de Nascimento (DD/MM/AAAA):"));
         try {
             MaskFormatter mascaraData = new MaskFormatter("##/##/####");
             mascaraData.setPlaceholderCharacter('_');
             dataNascimentoField = new JFormattedTextField(mascaraData);
         } catch (ParseException e) {
             dataNascimentoField = new JFormattedTextField();
+            e.printStackTrace();
         }
-        add(dataNascimentoField);
+        painelFormulario.add(new JLabel("Data de Nascimento (DD/MM/AAAA):"));
+        painelFormulario.add(dataNascimentoField);
 
-        JButton btnSalvar = new JButton("Salvar Alterações");
-        JButton btnCancelar = new JButton("Cancelar");
+        return painelFormulario;
+    }
 
-        add(btnSalvar);
-        add(btnCancelar);
+    private JPanel criarPainelBotoes() {
+        JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        btnAtualizar = new JButton("Atualizar");
+        btnSair = new JButton("Sair");
+
+        btnAtualizar.addActionListener(e -> atualizarPaciente());
+        btnSair.addActionListener(e -> dispose());
+
+        painelBotoes.add(btnAtualizar);
+        painelBotoes.add(btnSair);
         
-        popularCampos();
-
-        // --- Eventos ---
-        btnSalvar.addActionListener(e -> atualizarPaciente());
-        btnCancelar.addActionListener(e -> dispose());
+        return painelBotoes;
     }
 
-    private void popularCampos() {
-        if (pacienteParaEditar != null) {
-            nomeField.setText(pacienteParaEditar.getNome());
-            cpfField.setText(pacienteParaEditar.getCpf());
-            
+    private void carregarPacientesNaTabela() {
+        modeloTabela.setRowCount(0); // Limpa a tabela
+        try {
+            this.listaPacientes = pacienteDao.findAll(); // Armazena a lista localmente
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            if (pacienteParaEditar.getDataDeNascimento() != null) {
-                dataNascimentoField.setText(pacienteParaEditar.getDataDeNascimento().format(formatter));
+            for (Paciente p : listaPacientes) {
+                String dataFormatada = (p.getDataDeNascimento() != null) ? p.getDataDeNascimento().format(formatter) : "";
+                modeloTabela.addRow(new Object[]{p.getId(), p.getNome(), p.getCpf(), dataFormatada});
             }
+        } catch (DAOException e) {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar pacientes: " + e.getMessage(), "Erro de Banco de Dados", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    /**
-     * NOVO: Método de atualização com a lógica de comparação.
-     * Este método reflete o comportamento do seu código de console.
-     */
+    private void preencherCamposComSelecao() {
+        int selectedRow = tabelaPacientes.getSelectedRow();
+        if (selectedRow != -1) { // -1 significa que nenhuma linha está selecionada
+            // Pega o paciente da lista local, usando o índice da linha da tabela
+            pacienteSelecionado = listaPacientes.get(selectedRow);
+
+            nomeField.setText(pacienteSelecionado.getNome());
+            cpfField.setText(pacienteSelecionado.getCpf());
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            if (pacienteSelecionado.getDataDeNascimento() != null) {
+                dataNascimentoField.setText(pacienteSelecionado.getDataDeNascimento().format(formatter));
+            } else {
+                dataNascimentoField.setText("");
+            }
+        } else {
+            // Se nenhuma linha for selecionada (ou a seleção for limpa), reseta os campos
+            pacienteSelecionado = null;
+            nomeField.setText("");
+            cpfField.setText("");
+            dataNascimentoField.setText("");
+        }
+    }
+
     private void atualizarPaciente() {
+        if (pacienteSelecionado == null) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecione um paciente na tabela para editar.", "Nenhum Paciente Selecionado", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         // 1. Pega os dados dos campos de texto (os dados novos)
         String nomeNovo = nomeField.getText().trim();
-        String cpfNovo = cpfField.getText().trim();
-        String nascimentoStrNovo = dataNascimentoField.getText().trim();
+        String cpfNovo = cpfField.getText().replaceAll("[._-]", ""); // Remove máscara para validação
+        String nascimentoStrNovo = dataNascimentoField.getText();
 
-        // 2. Validações básicas de preenchimento
-        if (nomeNovo.isEmpty() || cpfNovo.isEmpty() || nascimentoStrNovo.contains("_")) {
+        // 2. Validações
+        if (nomeNovo.isEmpty() || cpfNovo.length() != 11 || nascimentoStrNovo.contains("_")) {
             JOptionPane.showMessageDialog(this, "Todos os campos devem ser preenchidos corretamente.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
-        if (!cpfNovo.matches("\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}")) {
-            JOptionPane.showMessageDialog(this, "CPF inválido. Use o formato XXX.XXX.XXX-XX.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
+        
         LocalDate dataNascimentoNova;
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -127,32 +198,29 @@ public class PacienteEditDialog extends JDialog {
             return;
         }
 
-        // 3. Compara os dados novos com os originais para ver se algo mudou
-        boolean nomeMudou = !Objects.equals(nomeNovo, this.nomeOriginal);
-        boolean cpfMudou = !Objects.equals(cpfNovo, this.cpfOriginal);
-        boolean dataMudou = !Objects.equals(dataNascimentoNova, this.dataNascimentoOriginal);
+        // 3. Compara os dados novos com os do objeto selecionado
+        boolean nomeMudou = !Objects.equals(nomeNovo, pacienteSelecionado.getNome());
+        boolean cpfMudou = !Objects.equals(cpfField.getText(), pacienteSelecionado.getCpf()); // Compara com máscara
+        boolean dataMudou = !Objects.equals(dataNascimentoNova, pacienteSelecionado.getDataDeNascimento());
 
-        boolean algumaCoisaMudou = nomeMudou || cpfMudou || dataMudou;
-
-        // 4. Se nada mudou, informa o usuário e não faz nada no banco
-        if (!algumaCoisaMudou) {
+        if (!nomeMudou && !cpfMudou && !dataMudou) {
             JOptionPane.showMessageDialog(this, "Nenhuma alteração foi detectada.", "Informação", JOptionPane.INFORMATION_MESSAGE);
-            dispose();
             return;
         }
 
-        // 5. Se houve mudanças, atualiza o objeto 'Paciente'
-        pacienteParaEditar.setNome(nomeNovo);
-        pacienteParaEditar.setCpf(cpfNovo);
-        pacienteParaEditar.setDataDeNascimento(dataNascimentoNova);
+        // 4. Se houve mudanças, atualiza o objeto 'Paciente'
+        pacienteSelecionado.setNome(nomeNovo);
+        pacienteSelecionado.setCpf(cpfField.getText()); // Salva com a máscara
+        pacienteSelecionado.setDataDeNascimento(dataNascimentoNova);
 
-        // 6. Tenta persistir a atualização no banco de dados
+        // 5. Tenta persistir a atualização no banco de dados
         try {
-            pacienteDao.update(pacienteParaEditar);
+            pacienteDao.update(pacienteSelecionado);
             JOptionPane.showMessageDialog(this, "✅ Paciente atualizado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-            dispose(); // Fecha a janela após salvar
+            
+            // Atualiza a tabela para refletir a mudança
+            carregarPacientesNaTabela();
         } catch (DAOException e) {
-            // Exibe a mensagem de erro vinda da sua exceção customizada
             JOptionPane.showMessageDialog(this, "Não foi possível atualizar o paciente.\n" + e.getMessage(), "Erro no Banco de Dados", JOptionPane.ERROR_MESSAGE);
         }
     }

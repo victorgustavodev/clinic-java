@@ -1,5 +1,6 @@
 package crud.prontuario.dao;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,15 +24,13 @@ public class ExameDAO implements IEntityDAO<Exame>{
 	    // A query SQL está correta.
 	    String sql = "INSERT INTO exames (descricao, data_exame, paciente_id) VALUES (?, ?, ?)";
 
+	    Date dataSql = Date.valueOf(exame.getDataExame());
+	    
 	    try {
 	        PreparedStatement pstm = conn.getConnection().prepareStatement(sql);
 
 	        // Define a descrição (parâmetro 1)
 	        pstm.setString(1, exame.getDescricao());
-
-	        // --- CORREÇÃO APLICADA AQUI ---
-	        // Converte o LocalDate do objeto Exame para um java.sql.Date
-	        java.sql.Date dataSql = java.sql.Date.valueOf(exame.getDataExame()); // Supondo que o getter se chame getDataExame()
 	        
 	        // Define a data usando setDate (parâmetro 2)
 	        pstm.setDate(2, dataSql);

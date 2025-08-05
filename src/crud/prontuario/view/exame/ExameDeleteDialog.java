@@ -78,7 +78,7 @@ public class ExameDeleteDialog extends JDialog {
         tableModel.setRowCount(0);
 
         try {
-            // Usa o método do DAO para buscar todos os exames com dados do paciente
+           
             List<Exame> exames = exameDao.findByPacienteName(""); 
             
             if (exames.isEmpty()) {

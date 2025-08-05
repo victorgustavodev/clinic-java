@@ -21,8 +21,7 @@ public class Exame {
 	public Exame(String descricao, LocalDate data) {
 		this.descricao = descricao;
 		this.data = data;
-	}	
-	
+	}
 	
 
 	public Paciente getPaciente() {

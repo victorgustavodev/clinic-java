@@ -77,8 +77,8 @@ public class MainWindow extends JFrame {
         });
         
         
-        btnEditarExame.addActionListener(e -> {
-        	PacienteEditDialog editDialog = new PacienteEditDialog(null);
+        btnEditarPaciente.addActionListener(e -> {
+        	PacienteEditDialog editDialog = new PacienteEditDialog(this);
             editDialog.setVisible(true);
         });
         
