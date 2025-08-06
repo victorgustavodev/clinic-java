@@ -7,6 +7,8 @@ import crud.prontuario.dao.IEntityDAO;
 import crud.prontuario.dao.PacienteDAO;
 import crud.prontuario.database.DatabaseConnectionMySQL;
 import crud.prontuario.model.Paciente;
+import crud.prontuario.utils.*;
+
 
 import java.awt.*;
 import java.text.ParseException;
@@ -46,7 +48,8 @@ public class PacienteCreateDialog extends JDialog {
             cpfField = new JFormattedTextField(); // Fallback
             e.printStackTrace();
         }
-        add(cpfField);
+        
+        add(cpfField);        
 
         add(new JLabel("Data de Nascimento (DD/MM/AAAA):"));
         try {
@@ -81,18 +84,13 @@ public class PacienteCreateDialog extends JDialog {
 
     private void salvarPaciente() {
         String nome = nomeField.getText().trim();
-        // getText() já retorna a string com a máscara
         String cpf = cpfField.getText();
-        String nascimentoStr = dataDeNascimentoField.getText();
+        String nascimentoStr = dataDeNascimentoField.getText();  
 
-        // ALTERADO: Validação unificada para checar se campos estão preenchidos (sem o '_')
         if (nome.isEmpty() || cpf.contains("_") || nascimentoStr.contains("_")) {
             JOptionPane.showMessageDialog(this, "Todos os campos devem ser preenchidos completamente.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
-        // REMOVIDO: A validação com regex se torna redundante, pois a máscara já força o formato.
-        // A checagem por "_" já garante que o campo foi todo preenchido.
 
         LocalDate dataNascimento;
         try {
@@ -106,70 +104,25 @@ public class PacienteCreateDialog extends JDialog {
         // Criando o paciente com os dados validados
         try {
             Paciente paciente = new Paciente(nome, cpf, dataNascimento);
-            if(validar(cpf)) {
+
+            	
+            if(ValidationsAndFormatting.validarCPF(cpf)) {
             	pacienteDao.create(paciente);
             	JOptionPane.showMessageDialog(this, "✅ Paciente salvo com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             }
             else {
             	JOptionPane.showMessageDialog(this, "Não foi possivel salvar o paciente, verifique o CPF!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             }            
-            dispose(); // Fecha a janela após salvar
+            dispose();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Ocorreu um erro ao salvar o paciente:\n" + e.getMessage(), "Erro no Banco de Dados", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Não foi possivel criar o paciente, CPF já cadastrado!", "Erro de Duplicidade", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void limparCampos() {
         nomeField.setText("");
-        cpfField.setValue(null); // .setValue(null) é a forma correta de limpar um JFormattedTextField
+        cpfField.setValue(null);
         dataDeNascimentoField.setValue(null);
-    }
-
-        public static boolean validar(String cpf) {
-            // Remove caracteres não numéricos (pontos, traços)
-            String cpfLimpo = cpf.replaceAll("[^\\d]", "");
-
-            // 1. Verifica se tem 11 dígitos
-            if (cpfLimpo.length() != 11) {
-                return false;
-            }
-
-            // 2. Verifica se todos os dígitos são iguais (ex: 111.111.111-11)
-            if (cpfLimpo.matches("(\\d)\\1{10}")) {
-                return false;
-            }
-
-            try {
-                // 3. Cálculo do primeiro dígito verificador
-                int soma = 0;
-                for (int i = 0; i < 9; i++) {
-                    soma += Integer.parseInt(String.valueOf(cpfLimpo.charAt(i))) * (10 - i);
-                }
-                int resto = soma % 11;
-                int digitoVerificador1 = (resto < 2) ? 0 : 11 - resto;
-
-                // 4. Verifica o primeiro dígito
-                if (digitoVerificador1 != Integer.parseInt(String.valueOf(cpfLimpo.charAt(9)))) {
-                    return false;
-                }
-
-                // 5. Cálculo do segundo dígito verificador
-                soma = 0;
-                for (int i = 0; i < 10; i++) {
-                    soma += Integer.parseInt(String.valueOf(cpfLimpo.charAt(i))) * (11 - i);
-                }
-                resto = soma % 11;
-                int digitoVerificador2 = (resto < 2) ? 0 : 11 - resto;
-                
-                // 6. Verifica o segundo dígito e retorna o resultado final
-                return digitoVerificador2 == Integer.parseInt(String.valueOf(cpfLimpo.charAt(10)));
-
-            } catch (NumberFormatException e) {
-                // Se ocorrer um erro na conversão, o CPF é inválido
-                return false;
-            }
-        
     }
 
 }

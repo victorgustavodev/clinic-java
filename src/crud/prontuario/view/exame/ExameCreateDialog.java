@@ -45,7 +45,7 @@ public class ExameCreateDialog extends JDialog {
 		add(new JLabel("Paciente:"), gbc);
 
 		gbc.gridx = 1;
-		gbc.weightx = 1.0; // Permite que o combobox expanda
+		gbc.weightx = 1; // Permite que o combobox expanda
 		pacienteComboBox = new JComboBox<>();
 		add(pacienteComboBox, gbc);
 
