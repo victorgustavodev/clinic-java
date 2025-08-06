@@ -7,14 +7,14 @@ import java.time.format.ResolverStyle;
 import java.util.regex.Pattern;
 
 /**
- * Classe utilitária final que agrupa métodos estáticos para validação e formatação
- * de dados comuns, como CPF, datas e nomes.
- * Esta classe não pode ser instanciada.
+ * Classe utilitária final que agrupa métodos estáticos para validação e
+ * formatação de dados comuns, como CPF, datas e nomes. Esta classe não pode ser
+ * instanciada.
  *
  * @author Gemini
  * @version 1.0
- * 
- * 
+ *
+ *
  */
 public final class ValidationsAndFormatting {
 
@@ -30,9 +30,9 @@ public final class ValidationsAndFormatting {
     }
 
     /**
-     * Valida um número de CPF brasileiro.
-     * O método verifica o formato (com ou sem máscara), a quantidade de dígitos,
-     * se todos os dígitos são iguais e calcula os dois dígitos verificadores.
+     * Valida um número de CPF brasileiro. O método verifica o formato (com ou
+     * sem máscara), a quantidade de dígitos, se todos os dígitos são iguais e
+     * calcula os dois dígitos verificadores.
      *
      * @param cpf O CPF a ser validado, pode conter máscara (XXX.XXX.XXX-XX).
      * @return {@code true} se o CPF for válido, {@code false} caso contrário.
@@ -90,8 +90,8 @@ public final class ValidationsAndFormatting {
      *
      * @param cpf O CPF com 11 dígitos a ser formatado.
      * @return A string do CPF formatada.
-     * @throws IllegalArgumentException se o CPF fornecido não contiver exatamente 11 dígitos
-     * após a limpeza de caracteres não numéricos.
+     * @throws IllegalArgumentException se o CPF fornecido não contiver
+     * exatamente 11 dígitos após a limpeza de caracteres não numéricos.
      */
     public static String formatarCPF(String cpf) {
         if (cpf == null) {
@@ -107,8 +107,8 @@ public final class ValidationsAndFormatting {
     }
 
     /**
-     * Valida uma data no formato "DD/MM/AAAA".
-     * A validação considera anos bissextos e a quantidade de dias em cada mês.
+     * Valida uma data no formato "DD/MM/AAAA". A validação considera anos
+     * bissextos e a quantidade de dias em cada mês.
      *
      * @param data A string da data no formato "DD/MM/AAAA".
      * @return {@code true} se a data for válida, {@code false} caso contrário.
@@ -117,7 +117,7 @@ public final class ValidationsAndFormatting {
         if (data == null || !data.matches("\\d{2}/\\d{2}/\\d{4}")) {
             return false;
         }
-        
+
         // Usar ResolverStyle.STRICT para garantir que datas inválidas (ex: 31/04/2023) não sejam aceitas.
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/uuuu")
                 .withResolverStyle(ResolverStyle.STRICT);
@@ -129,28 +129,27 @@ public final class ValidationsAndFormatting {
             return false;
         }
     }
-    
+
     /**
-     * Formata uma string de data para o formato "DD/MM/AAAA".
-     * O método primeiro valida a data para garantir sua integridade.
+     * Formata uma string de data para o formato "DD/MM/AAAA". O método primeiro
+     * valida a data para garantir sua integridade.
      *
-     * @param data A string da data a ser formatada (esperada no formato DD/MM/AAAA).
+     * @param data A string da data a ser formatada (esperada no formato
+     * DD/MM/AAAA).
      * @return A string da data formatada "DD/MM/AAAA".
      * @throws IllegalArgumentException se a data for inválida.
      */
     public static String formatarData(String data) {
-         if (!validarData(data)) {
+        if (!validarData(data)) {
             throw new IllegalArgumentException("A data fornecida é inválida ou não está no formato DD/MM/AAAA.");
-         }
-         // Se a data já é válida no formato, apenas a retorna.
-         return data;
+        }
+        // Se a data já é válida no formato, apenas a retorna.
+        return data;
     }
 
-
     /**
-     * Valida um nome de pessoa.
-     * O nome deve conter entre 3 e 100 caracteres, permitindo apenas letras (incluindo
-     * acentuadas) e espaços.
+     * Valida um nome de pessoa. O nome deve conter entre 3 e 100 caracteres,
+     * permitindo apenas letras (incluindo acentuadas) e espaços.
      *
      * @param nome O nome a ser validado.
      * @return {@code true} se o nome for válido, {@code false} caso contrário.

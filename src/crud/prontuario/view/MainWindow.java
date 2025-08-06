@@ -11,7 +11,7 @@ public class MainWindow extends JFrame {
     private static final long serialVersionUID = 1L;
 
     public MainWindow() {
-        
+
         setTitle("Sistema de Gerenciamento de Prontuários");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -19,14 +19,14 @@ public class MainWindow extends JFrame {
         setLayout(new BorderLayout());
 
         JMenuBar menuBar = new JMenuBar();
-        
-     // --- Menu: Pacientes ---
+
+        // --- Menu: Pacientes ---
         JMenu menuPacientes = new JMenu("Pacientes");
         JMenuItem btnCriarPaciente = new JMenuItem("Criar Paciente");
         JMenuItem btnLocalizarPaciente = new JMenuItem("Localizar");
         JMenuItem btnEditarPaciente = new JMenuItem("Editar");
         JMenuItem btnExcluirPaciente = new JMenuItem("Excluir");
-        
+
         menuPacientes.add(btnCriarPaciente);
         menuPacientes.add(btnLocalizarPaciente);
         menuPacientes.add(btnEditarPaciente);
@@ -39,7 +39,7 @@ public class MainWindow extends JFrame {
         JMenuItem btnLocalizarExame = new JMenuItem("Localizar");
         JMenuItem btnEditarExame = new JMenuItem("Editar");
         JMenuItem btnExcluirExame = new JMenuItem("Excluir");
-        
+
         menuExames.add(btnCriarExame);
         menuExames.add(btnLocalizarExame);
         menuExames.add(btnEditarExame);
@@ -54,65 +54,60 @@ public class MainWindow extends JFrame {
 
         setJMenuBar(menuBar);
 
-        JPanel centralPanel = new JPanel(new GridBagLayout()); 
+        JPanel centralPanel = new JPanel(new GridBagLayout());
         JLabel welcomeLabel = new JLabel("Bem-vindo ao Sistema de Prontuários");
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 24));
         welcomeLabel.setForeground(Color.DARK_GRAY);
         centralPanel.add(welcomeLabel);
-        
 
         add(centralPanel, BorderLayout.CENTER);
 
-        
         //-------PACIENTES--------
         btnCriarPaciente.addActionListener(e -> {
             PacienteCreateDialog createDialog = new PacienteCreateDialog(null);
             createDialog.setVisible(true);
         });
 
-        
         btnLocalizarPaciente.addActionListener(e -> {
-        	PacienteSearchDialog searchDialog = new PacienteSearchDialog(null);
-        	searchDialog.setVisible(true);
+            PacienteSearchDialog searchDialog = new PacienteSearchDialog(null);
+            searchDialog.setVisible(true);
         });
-        
-        
+
         btnEditarPaciente.addActionListener(e -> {
-        	PacienteEditDialog editDialog = new PacienteEditDialog(this);
+            PacienteEditDialog editDialog = new PacienteEditDialog(this);
             editDialog.setVisible(true);
         });
-        
+
         btnExcluirPaciente.addActionListener(e -> {
-        	PacienteDeleteDialog deleteDialog = new PacienteDeleteDialog(null);
-        	deleteDialog.setVisible(true);
-        	}
+            PacienteDeleteDialog deleteDialog = new PacienteDeleteDialog(null);
+            deleteDialog.setVisible(true);
+        }
         );
-        
+
         //-------EXAMES--------
         btnCriarExame.addActionListener(e -> {
             ExameCreateDialog createExameDialog = new ExameCreateDialog(this);
             createExameDialog.setVisible(true);
         });
-        
-        
+
         btnLocalizarExame.addActionListener(e -> {
-        	ExameSearchDialog listDialog = new ExameSearchDialog(null);
-        	listDialog.setVisible(true);
+            ExameSearchDialog listDialog = new ExameSearchDialog(null);
+            listDialog.setVisible(true);
         });
-                 
+
         btnEditarExame.addActionListener(e -> {
-        	ExameEditDialog editDialog = new ExameEditDialog(null);
+            ExameEditDialog editDialog = new ExameEditDialog(null);
             editDialog.setVisible(true);
         });
-        
+
         btnExcluirExame.addActionListener(e -> {
-        	ExameDeleteDialog deleteDialog = new ExameDeleteDialog(null);
-        	deleteDialog.setVisible(true);
-        	}
+            ExameDeleteDialog deleteDialog = new ExameDeleteDialog(null);
+            deleteDialog.setVisible(true);
+        }
         );
 
         itemSair.addActionListener(e -> fecharAplicacao());
-        
+
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
@@ -123,11 +118,11 @@ public class MainWindow extends JFrame {
 
     private void fecharAplicacao() {
         int resposta = JOptionPane.showConfirmDialog(
-            this,
-            "Você tem certeza que deseja sair da aplicação?",
-            "Confirmar Saída",
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.QUESTION_MESSAGE
+                this,
+                "Você tem certeza que deseja sair da aplicação?",
+                "Confirmar Saída",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
         );
 
         if (resposta == JOptionPane.YES_OPTION) {
