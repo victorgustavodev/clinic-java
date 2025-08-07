@@ -1,12 +1,11 @@
 
 package crud.prontuario.view.exame;
 
-import crud.prontuario.dao.ExameDAO;
-import crud.prontuario.dao.IEntityDAO;
-import crud.prontuario.dao.PacienteDAO;
 import crud.prontuario.database.DatabaseConnectionMySQL;
+import crud.prontuario.database.IConnection;
 import crud.prontuario.model.Exame;
 import crud.prontuario.model.Paciente;
+import crud.prontuario.services.Facade;
 
 import javax.swing.*;
 import javax.swing.text.MaskFormatter;
@@ -21,14 +20,13 @@ public class ExameCreateDialog extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 
-	// --- Componentes da Interface ---
+	IConnection conexao = new DatabaseConnectionMySQL();
+
+	Facade facade = new Facade(conexao);
+
 	private JComboBox<Object> pacienteComboBox;
 	private JFormattedTextField dataExameField;
 	private JTextArea descricaoArea;
-
-	// --- Camada de Acesso a Dados (DAO) ---
-	IEntityDAO<Paciente> pacienteDao = new PacienteDAO(new DatabaseConnectionMySQL());
-	IEntityDAO<Exame> exameDao = new ExameDAO(new DatabaseConnectionMySQL()); // Assumindo um construtor padrão
 
 	public ExameCreateDialog(Frame parent) {
 		super(parent, "Cadastrar Novo Exame", true);
@@ -113,7 +111,7 @@ public class ExameCreateDialog extends JDialog {
 	private void carregarPacientes() {
 		pacienteComboBox.addItem("Selecione um paciente..."); // Item inicial
 		try {
-			List<Paciente> pacientes = pacienteDao.findAll();
+			List<Paciente> pacientes = facade.listarTodosPacientes();
 			for (Paciente paciente : pacientes) {
 				pacienteComboBox.addItem(paciente);
 			}
@@ -170,7 +168,7 @@ public class ExameCreateDialog extends JDialog {
 
 		// --- 3. Persistência no Banco de Dados ---
 		try {
-			exameDao.create(novoExame);
+			facade.agendarExame(novoExame);
 			JOptionPane.showMessageDialog(this, "✅ Exame salvo com sucesso!", "Sucesso",
 					JOptionPane.INFORMATION_MESSAGE);
 			dispose(); // Fecha a janela

@@ -19,15 +19,15 @@ public class PacienteDAO implements IEntityDAO<Paciente> {
 	public PacienteDAO(IConnection connection) {
 		this.conn = connection;
 	}
-	
+
 	@Override
 	public void create(Paciente t) {
-		
+
 		Date dob = Date.valueOf(t.getDataDeNascimento());
-				
+
 		try {
 			PreparedStatement pstm = conn.getConnection()
-			.prepareStatement("INSERT INTO PACIENTES (nome, cpf, dataDeNascimento) VALUES (?, ?, ?);");
+					.prepareStatement("INSERT INTO PACIENTES (nome, cpf, dataDeNascimento) VALUES (?, ?, ?);");
 			pstm.setString(1, t.getNome());
 			pstm.setString(2, t.getCpf());
 			pstm.setDate(3, dob);
@@ -75,85 +75,80 @@ public class PacienteDAO implements IEntityDAO<Paciente> {
 		}
 	}
 
-	
 	// Em PacienteDAO.java
 	@Override
 	public Paciente findByCPF(String cpf) {
-	    Paciente paciente = null;
-	    String sql = "SELECT * FROM PACIENTES WHERE cpf = ?;";
-	    
-	    try {
-	        PreparedStatement pstm = conn.getConnection().prepareStatement(sql);
-	        pstm.setString(1, cpf);
-	        ResultSet rs = pstm.executeQuery();
+		Paciente paciente = null;
+		String sql = "SELECT * FROM PACIENTES WHERE cpf = ?;";
 
-	        if (rs.next()) {
-	            // --- CORREÇÃO APLICADA AQUI ---
-	            // Agora estamos lendo a data e usando o construtor correto
-	            paciente = new Paciente(
-	                rs.getLong("id"), 
-	                rs.getString("nome"), 
-	                rs.getString("cpf"),
-	                rs.getDate("dataDeNascimento") // Lendo a data do banco
-	            );
+		try {
+			PreparedStatement pstm = conn.getConnection().prepareStatement(sql);
+			pstm.setString(1, cpf);
+			ResultSet rs = pstm.executeQuery();
 
-	            // O código para carregar exames continua o mesmo
-	            List<Exame> exames = carregarExames(paciente);
-	            paciente.setExames(exames);
-	        }
-	        rs.close();
-	        pstm.close();
-	    } catch (SQLException e) {
-	        throw new DAOException("Não foi possivel buscar o paciente. \nErro: " + e);
-	    }
-	    return paciente;
+			if (rs.next()) {
+				// --- CORREÇÃO APLICADA AQUI ---
+				// Agora estamos lendo a data e usando o construtor correto
+				paciente = new Paciente(rs.getLong("id"), rs.getString("nome"), rs.getString("cpf"),
+						rs.getDate("dataDeNascimento") // Lendo a data do banco
+				);
+
+				// O código para carregar exames continua o mesmo
+				List<Exame> exames = carregarExames(paciente);
+				paciente.setExames(exames);
+			}
+			rs.close();
+			pstm.close();
+		} catch (SQLException e) {
+			throw new DAOException("Não foi possivel buscar o paciente. \nErro: " + e);
+		}
+		return paciente;
 	}
-
 
 	@Override
 	public List<Paciente> findAll() {
-	    List<Paciente> pacientes = new ArrayList<>();
-	    try {
-	        PreparedStatement pstm = conn.getConnection().prepareStatement("SELECT * FROM PACIENTES;");
-	        ResultSet rs = pstm.executeQuery();
+		List<Paciente> pacientes = new ArrayList<>();
+		try {
+			PreparedStatement pstm = conn.getConnection().prepareStatement("SELECT * FROM PACIENTES;");
+			ResultSet rs = pstm.executeQuery();
 
-	        while (rs.next()) {
-	            Paciente paciente = new Paciente(rs.getLong("id"), rs.getString("nome"), rs.getString("cpf"), rs.getDate("dataDeNascimento"));    
-	            pacientes.add(paciente);
-	        }
-	        pstm.close();
-	    } catch (SQLException e) {
-	        throw new DAOException("Não foi possível buscar os pacientes! \nErro: ", e);
-	    }
-	    return pacientes;
+			while (rs.next()) {
+				Paciente paciente = new Paciente(rs.getLong("id"), rs.getString("nome"), rs.getString("cpf"),
+						rs.getDate("dataDeNascimento"));
+				pacientes.add(paciente);
+			}
+			pstm.close();
+		} catch (SQLException e) {
+			throw new DAOException("Não foi possível buscar os pacientes! \nErro: ", e);
+		}
+		return pacientes;
 	}
-	
+
 	private List<Exame> carregarExames(Paciente paciente) {
-	    List<Exame> exames = new ArrayList<>();
-	    try {
-	        PreparedStatement pstm = conn.getConnection()
-	                .prepareStatement("SELECT * FROM EXAMES WHERE paciente_id = ?;");
-	        pstm.setLong(1, paciente.getId());
-	        ResultSet rs = pstm.executeQuery();
+		List<Exame> exames = new ArrayList<>();
+		try {
+			PreparedStatement pstm = conn.getConnection()
+					.prepareStatement("SELECT * FROM EXAMES WHERE paciente_id = ?;");
+			pstm.setLong(1, paciente.getId());
+			ResultSet rs = pstm.executeQuery();
 
-	        while (rs.next()) {
-	            Exame exame = new Exame();
-	            exame.setId(rs.getLong("id"));
-	            exame.setDescricao(rs.getString("descricao"));
-	            exame.setDataExame(null);
-	            exame.setPaciente(paciente);
-	            exames.add(exame);
-	        }
+			while (rs.next()) {
+				Exame exame = new Exame();
+				exame.setId(rs.getLong("id"));
+				exame.setDescricao(rs.getString("descricao"));
+				exame.setDataExame(null);
+				exame.setPaciente(paciente);
+				exames.add(exame);
+			}
 
-	        rs.close();
-	        pstm.close();
-	    } catch (SQLException e) {
-	        throw new DAOException("Erro ao carregar exames do paciente ID: " + paciente.getId(), e);
-	    }
+			rs.close();
+			pstm.close();
+		} catch (SQLException e) {
+			throw new DAOException("Erro ao carregar exames do paciente ID: " + paciente.getId(), e);
+		}
 
-	    return exames;
+		return exames;
 	}
-
 
 	@Override
 	public void update(Paciente t) {
@@ -175,6 +170,5 @@ public class PacienteDAO implements IEntityDAO<Paciente> {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
 
 }

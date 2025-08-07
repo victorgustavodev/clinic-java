@@ -1,9 +1,8 @@
 package crud.prontuario.view.paciente;
 
-import crud.prontuario.dao.PacienteDAO;
-import crud.prontuario.database.IConnection;
-import crud.prontuario.database.DatabaseConnectionMySQL; // Supondo que você use esta conexão
+import crud.prontuario.database.*;
 import crud.prontuario.model.Paciente;
+import crud.prontuario.services.Facade;
 import crud.prontuario.exception.DAOException;
 
 import javax.swing.*;
@@ -20,6 +19,10 @@ import java.util.Objects;
 public class PacienteEditDialog extends JDialog {
 
     private static final long serialVersionUID = 1L;
+    
+	IConnection conexao = new DatabaseConnectionMySQL();
+
+	Facade facade = new Facade(conexao);
 
     // --- Componentes da Interface ---
     private JTable tabelaPacientes;
@@ -31,15 +34,12 @@ public class PacienteEditDialog extends JDialog {
     private JButton btnSair;
 
     // --- Lógica de Negócio ---
-    private final PacienteDAO pacienteDao;
     private List<Paciente> listaPacientes;
     private Paciente pacienteSelecionado;
 
     public PacienteEditDialog(Frame parent) {
         super(parent, "Edição de Paciente", true);
         
-        IConnection dbConnection = new DatabaseConnectionMySQL();
-        this.pacienteDao = new PacienteDAO(dbConnection);
 
         setLayout(new BorderLayout(10, 10));
         setSize(800, 600);
@@ -126,9 +126,9 @@ public class PacienteEditDialog extends JDialog {
     }
 
     private void carregarPacientesNaTabela() {
-        modeloTabela.setRowCount(0); // Limpa a tabela
+        modeloTabela.setRowCount(0);
         try {
-            this.listaPacientes = pacienteDao.findAll();
+            this.listaPacientes = facade.listarTodosPacientes();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             for (Paciente p : listaPacientes) {
                 String dataFormatada = (p.getDataDeNascimento() != null) ? p.getDataDeNascimento().format(formatter) : "";
@@ -200,7 +200,8 @@ public class PacienteEditDialog extends JDialog {
         pacienteSelecionado.setDataDeNascimento(dataNascimentoNova);
 
         try {
-            pacienteDao.update(pacienteSelecionado);
+        	
+        	facade.atualizarPaciente(pacienteSelecionado);
             JOptionPane.showMessageDialog(this, "✅ Paciente atualizado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             
             
