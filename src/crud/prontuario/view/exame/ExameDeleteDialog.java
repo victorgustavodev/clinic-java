@@ -64,6 +64,8 @@ public class ExameDeleteDialog extends JDialog {
 		carregarTodosExames();
 	}
 
+	//Controller
+	
 	private void carregarTodosExames() {
 
 		tableModel.setRowCount(0);

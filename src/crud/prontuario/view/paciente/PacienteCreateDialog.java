@@ -77,6 +77,8 @@ public class PacienteCreateDialog extends JDialog {
 		btnSair.addActionListener(e -> dispose());
 	}
 
+	//Controller
+	
 	private void salvarPaciente() {
 		String nome = nomeField.getText().trim();
 		String cpf = cpfField.getText();

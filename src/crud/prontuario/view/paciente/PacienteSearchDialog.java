@@ -24,7 +24,6 @@ public class PacienteSearchDialog extends JDialog {
 
 	Facade facade = new Facade(conexao);
 
-	// --- Componentes da Interface ---
 	private JFormattedTextField searchField;
 	private JTable table;
 	private DefaultTableModel tableModel;
@@ -60,14 +59,11 @@ public class PacienteSearchDialog extends JDialog {
 
 		add(searchPanel, BorderLayout.NORTH);
 
-		String[] columnNames = { "ID", "Nome", "CPF", "Data de Nascimento" };
+		String[] columnNames = { "ID", "Nome", "CPF", "Data de Nascimento", "Qtd. Exames" };
 		tableModel = new DefaultTableModel(columnNames, 0) {
-			/**
-			 * 
-			 */
+
 			private static final long serialVersionUID = 2L;
 
-			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
@@ -86,6 +82,8 @@ public class PacienteSearchDialog extends JDialog {
 
 		buscarPaciente();
 	}
+	
+	//Controller
 
 	private void buscarPaciente() {
 		List<Paciente> pacientesEncontrados = new ArrayList<>();
@@ -124,9 +122,25 @@ public class PacienteSearchDialog extends JDialog {
 
 		} else {
 			for (Paciente p : pacientes) {
-				Object[] rowData = { p.getId(), p.getNome(), p.getCpf(),
-						p.getDataDeNascimento() != null ? p.getDataDeNascimento().format(formatter) : "Não informada" };
-				tableModel.addRow(rowData);
+				try {
+
+					int qtdExames = facade.contarExamesPorPaciente(p.getId());
+
+					Object[] rowData = { p.getId(), p.getNome(), p.getCpf(),
+							p.getDataDeNascimento() != null ? p.getDataDeNascimento().format(formatter)
+									: "Não informada",
+							qtdExames };
+					tableModel.addRow(rowData);
+
+				} catch (DAOException e) {
+
+					Object[] rowData = { p.getId(), p.getNome(), p.getCpf(),
+							p.getDataDeNascimento() != null ? p.getDataDeNascimento().format(formatter)
+									: "Não informada",
+							"Erro ao contar" };
+					tableModel.addRow(rowData);
+					e.printStackTrace();
+				}
 			}
 		}
 	}

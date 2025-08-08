@@ -1,1 +1,1 @@
-Main-Class: crud.prontuario.app.Application
+Main-Class: crud.prontuario.view.MainWindow

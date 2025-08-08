@@ -24,7 +24,6 @@ public class PacienteEditDialog extends JDialog {
 
 	Facade facade = new Facade(conexao);
 
-    // --- Componentes da Interface ---
     private JTable tabelaPacientes;
     private DefaultTableModel modeloTabela;
     private JTextField nomeField;
@@ -33,7 +32,6 @@ public class PacienteEditDialog extends JDialog {
     private JButton btnAtualizar;
     private JButton btnSair;
 
-    // --- Lógica de Negócio ---
     private List<Paciente> listaPacientes;
     private Paciente pacienteSelecionado;
 
@@ -63,6 +61,8 @@ public class PacienteEditDialog extends JDialog {
             }
         });
     }
+    
+  //Controller
 
     private void criarPainelTabela() {
         modeloTabela = new DefaultTableModel(new Object[]{"ID", "Nome", "CPF", "Data de Nascimento"}, 0) {

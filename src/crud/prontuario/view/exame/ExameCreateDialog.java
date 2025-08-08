@@ -31,23 +31,20 @@ public class ExameCreateDialog extends JDialog {
 	public ExameCreateDialog(Frame parent) {
 		super(parent, "Cadastrar Novo Exame", true);
 
-		// --- Configuração do Layout ---
 		setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.insets = new Insets(5, 5, 5, 5); // Espaçamento
+		gbc.insets = new Insets(5, 5, 5, 5);
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 
-		// --- Linha 1: Seleção de Paciente ---
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		add(new JLabel("Paciente:"), gbc);
 
 		gbc.gridx = 1;
-		gbc.weightx = 1; // Permite que o combobox expanda
+		gbc.weightx = 1;
 		pacienteComboBox = new JComboBox<>();
 		add(pacienteComboBox, gbc);
 
-		// --- Linha 2: Data do Exame ---
 		gbc.gridx = 0;
 		gbc.gridy = 1;
 		add(new JLabel("Data do Exame (DD/MM/AAAA):"), gbc);
@@ -58,29 +55,27 @@ public class ExameCreateDialog extends JDialog {
 			mascaraData.setPlaceholderCharacter('_');
 			dataExameField = new JFormattedTextField(mascaraData);
 		} catch (ParseException e) {
-			dataExameField = new JFormattedTextField(); // Fallback
+			dataExameField = new JFormattedTextField();
 		}
 		add(dataExameField, gbc);
 
-		// --- Linha 3: Descrição do Exame ---
 		gbc.gridx = 0;
 		gbc.gridy = 2;
-		gbc.anchor = GridBagConstraints.NORTH; // Alinha o label no topo
+		gbc.anchor = GridBagConstraints.NORTH;
 		add(new JLabel("Descrição:"), gbc);
 
 		gbc.gridx = 1;
-		gbc.gridheight = 2; // Ocupa 2 linhas de altura
+		gbc.gridheight = 2;
 		gbc.fill = GridBagConstraints.BOTH;
-		gbc.weighty = 1.0; // Permite que a área de texto expanda verticalmente
+		gbc.weighty = 1.0;
 		descricaoArea = new JTextArea(5, 20);
 		descricaoArea.setLineWrap(true);
 		descricaoArea.setWrapStyleWord(true);
-		add(new JScrollPane(descricaoArea), gbc); // Adiciona a um painel de rolagem
+		add(new JScrollPane(descricaoArea), gbc);
 
-		// --- Linha 4: Painel de Botões ---
 		gbc.gridx = 0;
 		gbc.gridy = 4;
-		gbc.gridwidth = 2; // Ocupa 2 colunas
+		gbc.gridwidth = 2;
 		gbc.gridheight = 1;
 		gbc.weighty = 0;
 		gbc.fill = GridBagConstraints.NONE;
@@ -95,21 +90,21 @@ public class ExameCreateDialog extends JDialog {
 		buttonPanel.add(btnSair);
 		add(buttonPanel, gbc);
 
-		// --- Ações dos Botões ---
 		btnSalvar.addActionListener(e -> salvarExame());
 		btnLimpar.addActionListener(e -> limparCampos());
 		btnSair.addActionListener(e -> dispose());
 
-		// --- Carregamento de Dados Iniciais ---
 		carregarPacientes();
 
-		pack(); // Ajusta o tamanho da janela
+		pack();
 		setMinimumSize(new Dimension(500, 350));
 		setLocationRelativeTo(parent);
 	}
+	
+	//Controller
 
 	private void carregarPacientes() {
-		pacienteComboBox.addItem("Selecione um paciente..."); // Item inicial
+		pacienteComboBox.addItem("Selecione um paciente...");
 		try {
 			List<Paciente> pacientes = facade.listarTodosPacientes();
 			for (Paciente paciente : pacientes) {
@@ -128,7 +123,6 @@ public class ExameCreateDialog extends JDialog {
 	}
 
 	private void salvarExame() {
-		// --- 1. Validação dos Campos ---
 		if (pacienteComboBox.getSelectedIndex() <= 0) {
 			JOptionPane.showMessageDialog(this, "Por favor, selecione um paciente.", "Erro de Validação",
 					JOptionPane.WARNING_MESSAGE);
@@ -149,7 +143,6 @@ public class ExameCreateDialog extends JDialog {
 			return;
 		}
 
-		// --- 2. Conversão e Criação do Objeto ---
 		Paciente pacienteSelecionado = (Paciente) pacienteComboBox.getSelectedItem();
 		LocalDate dataExame;
 		try {
@@ -161,17 +154,13 @@ public class ExameCreateDialog extends JDialog {
 			return;
 		}
 
-		// Crie o objeto Exame (ajuste o construtor conforme sua classe Exame)
-		// Assumindo que o construtor agora é Exame(LocalDate data, String descricao,
-		// Paciente p)
 		Exame novoExame = new Exame(descricao, dataExame, pacienteSelecionado);
 
-		// --- 3. Persistência no Banco de Dados ---
 		try {
 			facade.agendarExame(novoExame);
 			JOptionPane.showMessageDialog(this, "✅ Exame salvo com sucesso!", "Sucesso",
 					JOptionPane.INFORMATION_MESSAGE);
-			dispose(); // Fecha a janela
+			dispose();
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(this, "Erro ao salvar o exame: " + e.getMessage(), "Erro Crítico",
 					JOptionPane.ERROR_MESSAGE);

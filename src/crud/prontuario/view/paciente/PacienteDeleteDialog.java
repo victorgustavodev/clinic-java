@@ -64,6 +64,8 @@ public class PacienteDeleteDialog extends JDialog {
 
 		carregarTodosPacientes();
 	}
+	
+	//Controller
 
 	private void carregarTodosPacientes() {
 		tableModel.setRowCount(0);

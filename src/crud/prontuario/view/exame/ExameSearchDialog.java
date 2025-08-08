@@ -69,6 +69,8 @@ public class ExameSearchDialog extends JDialog {
         
         buscarExames();
     }
+    
+  //Controller
 
     private void buscarExames() {
         String nomePaciente = searchField.getText().trim();

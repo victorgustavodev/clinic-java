@@ -52,6 +52,8 @@ public class ExameEditDialog extends JDialog {
 			}
 		});
 	}
+	
+	//Controller
 
 	private JScrollPane criarPainelTabela() {
 		modeloTabela = new DefaultTableModel(new Object[] { "ID Exame", "Descrição", "Data do Exame", "Paciente" }, 0) {

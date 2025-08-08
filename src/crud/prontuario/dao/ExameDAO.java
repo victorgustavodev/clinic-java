@@ -63,6 +63,32 @@ public class ExameDAO implements IEntityDAO<Exame> {
 		return exame;
 	}
 
+	// Adicione este método dentro da classe ExameDAO.java
+
+	public int countByPacienteId(Long pacienteId) {
+	    // A consulta SQL usa COUNT(*) para contar as linhas de forma eficiente
+	    String sql = "SELECT COUNT(*) FROM exames WHERE paciente_id = ?";
+	    
+	    // Usando try-with-resources para garantir o fechamento da conexão
+	    try (PreparedStatement pstm = conn.getConnection().prepareStatement(sql)) {
+	        
+	        pstm.setLong(1, pacienteId);
+	        
+	        try (ResultSet rs = pstm.executeQuery()) {
+	            // Se houver um resultado, retorne o valor da primeira coluna (a contagem)
+	            if (rs.next()) {
+	                return rs.getInt(1); 
+	            }
+	        }
+	    } catch (SQLException e) {
+	        // Lança uma exceção personalizada em caso de erro no banco
+	        throw new DAOException("Erro ao contar os exames do paciente.", e);
+	    }
+	    
+	    // Se nenhum paciente for encontrado ou ocorrer um erro não capturado, retorna 0
+	    return 0;
+	}
+	
 	public List<Exame> findByPacienteName(String nome) {
 		List<Exame> examesEncontrados = new ArrayList<>();
 
