@@ -1,73 +1,105 @@
-# Patient and Exam Management System (Java + MySQL)
+# 🏥 Sistema de Gerenciamento de Pacientes e Exames (Java Swing + MySQL)
 
-This is a simple console-based CRUD application built in Java that allows users to manage patients and medical exams. It was developed as part of an academic exercise to reinforce concepts such as object-oriented programming, data persistence using relational databases, and the DAO (Data Access Object) design pattern.
+<p>
+Este é um projeto de um sistema de desktop para gerenciar pacientes e seus exames médicos. A aplicação, desenvolvida em Java, utiliza a biblioteca Swing para criar uma interface gráfica e o MySQL para a persistência dos dados. O projeto foi concebido como um exercício acadêmico para aplicar e reforçar conceitos de programação orientada a objetos (POO), desenvolvimento de interfaces gráficas (GUI), integração com bancos de dados relacionais e o uso do padrão de projeto DAO (Data Access Object).
+</div>
 
-## 📌 Purpose
+<br>
 
-This Toy Project aims to provide a learning environment for students to apply knowledge acquired throughout the course. The application simulates a real-world healthcare management system where users can perform basic operations (Create, Read, Update, Delete) through a Java console interface.
+<center>
+  <img width="785" height="583" alt="image" src="https://github.com/user-attachments/assets/c602fae4-4582-4718-a36d-fea52ae78b9c" />
+</center>
 
-## 🧩 Features
+# 🛞 Execução do projeto
+<h2>
+  É possivel realizar a execução do projeto clicando no clinic.jar ou pelo terminal utilizando o seguinte comando:
+</h2>
 
-- Register, list, update, and delete **patients**.
-- Register, list, update, and delete **exams**.
-- Associate exams with patients.
-- Display patients with their associated exams.
-- Persist all data using **MySQL** (or compatible RDBMS).
-- Organized using the **DAO pattern** for clean separation of concerns.
+  ```
+  java -jar clinic.jar    # ou clinic-17.jar
+  ```
 
-## 💻 Technologies Used
+# 🎯 Objetivo
+O principal objetivo é fornecer um ambiente de aprendizado prático onde é possível visualizar a construção de uma aplicação CRUD (Create, Read, Update, Delete) completa, com uma interface visual e conexão a um banco de dados real, simulando um sistema de prontuários eletrônicos.
 
-- Java (JDK 17+ recommended)
-- JDBC for database connection
-- MySQL for data persistence
-- Maven (optional, if using for dependency management)
+# ✨ Funcionalidades
+- Gerenciamento de Pacientes: Cadastrar, consultar, atualizar e excluir registros de pacientes.
 
-  
-## 📂 Project Structure
-crud/
-├── prontuario/
-│ ├── app/ # Application entry point
-│ ├── dao/ # Data Access Objects (DAOs)
-│ ├── database/ # Database connection classes
-│ ├── model/ # Domain models (Paciente, Exame)
+- Gerenciamento de Exames: Cadastrar, consultar, atualizar e excluir exames, associando-os a um paciente.
 
+- Interface Gráfica: Todas as operações são realizadas através de janelas, formulários e botões construídos com Java Swing.
 
+- Persistência de Dados: Todos os dados de pacientes e exames são salvos em um banco de dados MySQL.
 
-## ⚙️ Requirements
+- Arquitetura Limpa: O código é organizado utilizando o padrão DAO para separar a lógica de negócios das regras de acesso a dados.
 
-- Java 17 or higher
-- MySQL installed and running
-- Database schema created (see below)
-- IDE like Eclipse, IntelliJ, or VSCode (optional)
+# 💻 Tecnologias Utilizadas
+- Java: Linguagem principal do projeto.
 
-## 🗄️ Database Schema (MySQL)
+- Swing: Biblioteca para a construção da interface gráfica (GUI).
 
-```sql
-CREATE TABLE pacientes (
-  id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  nome VARCHAR(255) NOT NULL,
-  cpf VARCHAR(14) NOT NULL UNIQUE
-);
+- JDBC: Para a conexão e comunicação com o banco de dados.
 
-CREATE TABLE exames (
-  id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  descricao VARCHAR(255) NOT NULL,
-  data_exame DATETIME NOT NULL,
-  paciente_id BIGINT,
-  FOREIGN KEY (paciente_id) REFERENCES pacientes(id) ON DELETE CASCADE
-);
+- MySQL: Sistema de Gerenciamento de Banco de Dados para armazenamento dos dados.
+
+# 🌿 Versionamento e Branches
+Este repositório está organizado em duas branches principais para garantir a compatibilidade com diferentes versões do Java. Escolha a branch que corresponde ao seu ambiente de desenvolvimento:
+
+- main: Versão do projeto compatível com o Java 21.
+
+- jdk-17: Versão do projeto compatível com o Java 17.
+
+<b>Certifique-se de estar na branch correta antes de compilar e executar o projeto.</b>
+
+# 📂 Estrutura do Projeto
+```
+prontuario/
+    ├── app/         # Ponto de entrada da aplicação
+    ├── dao/         # Data Access Objects (DAO)
+    ├── database/    # Classes de conexão com o banco
+    |── exception    # Excessões (Tratamento de erros)
+    ├── model/       # Modelos de domínio (Paciente, Exame)
+    |── services/    # Facade (Interface Simplificada)
+    |── utils/       # Validações e Formatação
+    |── view/        # Interfaces com implementação do Swing
 ```
 
-## 🚀 How to Run
-- Clone the repository.
 
-- Set up your MySQL database and update the connection details in DatabaseConnectionMySQL.java.
+# ⚙️ Requisitos
 
-- Compile and run Application.java.
+- Java 17 ou 21 (de acordo com a branch escolhida).
 
-- Follow the console prompts to interact with the system.
+- MySQL instalado e em execução.
 
-## 🤝 Contributions
-This project is for educational purposes. Contributions, suggestions, or improvements are welcome!
+- IDE como Eclipse, IntelliJ ou VSCode (Opcional, mas recomendado).
 
-Made with ☕ and 💻 for learning purposes.
+# 🗄️ Banco de Dados (MySQL)
+
+O banco de dados é gerado automaticamente, verifique o arquivo config.txt e configure-o de acordo com seu ambiente. 
+```
+DB_USERNAME=root     
+DB_PASSWORD=root        
+DB_ADDRESS=localhost    
+DB_PORT=3306
+DB_NAME=prontuario
+```
+
+# 🚀 Como Executar
+Clone o repositório:
+```
+git clone <url-do-repositorio>
+#Acesse o diretório e escolha a branch:
+
+cd <nome-do-diretorio>
+git checkout main-jdk17  # ou main-jdk21
+```
+- Configure o banco de dados: Crie o banco de dados e as tabelas usando o script SQL fornecido acima.
+
+- Atualize a conexão: Abra o projeto em sua IDE e atualize os detalhes de conexão com o banco de dados no arquivo de configuração (geralmente em database/DatabaseConnection.java).
+
+- Compile e execute: Encontre a classe principal que inicializa a interface Swing (ex: Application.java ou MainFrame.java) e execute-a.
+
+# 🤝 Contribuições
+Este projeto é destinado a fins educacionais. Contribuições, sugestões e melhorias são sempre bem-vindas!
+
+Feito com ☕ e 💻 para fins de aprendizado.
